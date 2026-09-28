@@ -25,6 +25,8 @@ const sizes = ["S","M","L","XL","XXL"];
 const addOnSizes = ["Small","Medium","Large"];
 const printPositions = ["Front","Back"];
 const patchPrices: Record<string,number> = { Small:50, Medium:100, Large:150 };
+const frontPatchOptions = ["Left Chest","Multiple","Long","Sleeves"];
+const multipleQuantities = [2,3,4,5];
 const printPrices: Record<string,number> = { Small:50, Medium:100, Large:150, "Full Print":250 };
 
 export default function Home() {
@@ -32,7 +34,8 @@ export default function Home() {
   const [selectedTone,setSelectedTone]=useState("#f5f2ea");
   const [kurtaSize,setKurtaSize]=useState("");
   const [patchSize,setPatchSize]=useState("");
-  const [patchFront,setPatchFront]=useState(false);
+  const [frontPatchOption,setFrontPatchOption]=useState("");
+  const [multipleQuantity,setMultipleQuantity]=useState(2);
   const [patchBack,setPatchBack]=useState(false);
   const [printSize,setPrintSize]=useState("");
   const [printPosition,setPrintPosition]=useState("");
@@ -50,11 +53,14 @@ export default function Home() {
   const [orderCreatedId,setOrderCreatedId]=useState("");
   const selectedColourIndex=colours.findIndex(([name])=>name===selectedColour);
   const selectedSpritePosition={backgroundPosition:`${(selectedColourIndex%5)*25}% ${Math.floor(selectedColourIndex/5)*50}%`};
-  const patchPrice=(patchFront && patchSize ? patchPrices[patchSize] : 0)+(patchBack ? patchPrices["Large"] : 0);
+  const frontPatchPrice=frontPatchOption==="Left Chest" && patchSize ? patchPrices[patchSize] : frontPatchOption==="Multiple" ? multipleQuantity*50 : frontPatchOption==="Long" ? 150 : frontPatchOption==="Sleeves" ? 100 : 0;
+  const patchPrice=frontPatchPrice+(patchBack ? patchPrices["Large"] : 0);
+  const patchDetailsText=frontPatchOption==="Left Chest" ? `Small/Medium/Large ${patchSize} Front (Left Chest)` : frontPatchOption==="Multiple" ? `Multiple Small Front (${multipleQuantity} patches)` : frontPatchOption==="Long" ? "Long Front" : frontPatchOption==="Sleeves" ? "Sleeves" : "";
+  const patchOrderText=frontPatchOption ? patchDetailsText+(patchBack ? " + Large Back Center" : "")+` / ₹${patchPrice}` : patchBack ? `Large Back Center / ₹${patchPrice}` : "None";
   const printPrice=printSize ? printPrices[printSize] : 0;
   const total=249+patchPrice+printPrice;
   const finalTotal=total;
-  const ready=!!kurtaSize && (!patchFront || !!patchSize) && (!printSize || printSize==="Full Print" || !!printPosition);
+  const ready=!!kurtaSize && (!frontPatchOption || frontPatchOption!=="Left Chest" || !!patchSize) && (!printSize || printSize==="Full Print" || !!printPosition);
 
   function filePreview(e:ChangeEvent<HTMLInputElement>,type:"patch"|"print"){
     const file=e.target.files?.[0]; if(!file)return;
@@ -72,7 +78,7 @@ export default function Home() {
     let savedOrderId=orderCreatedId;
     if(!savedOrderId){
       try{
-        const patchDetails=patchPrice ? ((patchFront?patchSize+" Front (Left Chest)":"")+(patchFront&&patchBack?" + ":"")+(patchBack?"Large Back Center":""))+" / ₹"+patchPrice : "None";
+        const patchDetails=patchOrderText;
         const printDetails=printSize ? printSize+" / "+(printSize==="Full Print"?"Full Print":printPosition)+" / ₹"+printPrice : "None";
         const res=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
           customerName,customerPhone,shippingAddress,shippingCity,shippingState,shippingPincode,
@@ -107,7 +113,7 @@ export default function Home() {
     }
     window.open("https://wa.me/917405652991?text="+encodeURIComponent(text), "_blank");
   }
-  const orderText = "Hi Hinglaj Creation, I want to order a custom kurta. Name: "+customerName+"; Mobile: "+customerPhone+"; Address: "+shippingAddress+", "+shippingCity+", "+shippingState+" - "+shippingPincode+"; Colour: "+selectedColour+"; Size: "+kurtaSize+"; Base: ₹249; Patch: "+(patchPrice ? ((patchFront ? patchSize+" Front (Left Chest)" : "") + (patchFront&&patchBack ? " + " : "") + (patchBack ? "Large Back Center" : "") + " / ₹"+patchPrice) : "None")+"; Print: "+(printSize ? printSize+" / "+printPosition+" / ₹"+printPrice : "None")+"; Product Total: ₹"+total+"; Shipping: Included Pan-India; Final Total: ₹"+finalTotal;
+  const orderText = "Hi Hinglaj Creation, I want to order a custom kurta. Name: "+customerName+"; Mobile: "+customerPhone+"; Address: "+shippingAddress+", "+shippingCity+", "+shippingState+" - "+shippingPincode+"; Colour: "+selectedColour+"; Size: "+kurtaSize+"; Base: ₹249; Patch: "+patchOrderText+"; Print: "+(printSize ? printSize+" / "+printPosition+" / ₹"+printPrice : "None")+"; Product Total: ₹"+total+"; Shipping: Included Pan-India; Final Total: ₹"+finalTotal;
 
   return <>
     <header className="nav"><div className="container nav-inner">
@@ -142,16 +148,16 @@ export default function Home() {
           <div className="builder-options">
             <div className="builder-card"><div className="builder-title"><span>1</span><div><h3>Kurta Size</h3><p>Choose your fitting size.</p></div></div><div className="option-grid kurta-size-grid">{sizes.map(s=><button key={s} className={"choice "+(kurtaSize===s?"choice-active":"")} onClick={()=>setKurtaSize(s)}>{s}</button>)}</div></div>
 
-            <div className="builder-card"><div className="builder-title"><span>2</span><div><h3>Patch Work <em>Optional</em></h3><p>Choose Front, Back, or both.</p></div></div><div className="option-label">Patch placement</div><div className="option-grid two"><button className={"choice "+(patchFront?"choice-active":"")} onClick={()=>setPatchFront(!patchFront)}>Front (Left Chest)</button><button className={"choice "+(patchBack?"choice-active":"")} onClick={()=>setPatchBack(!patchBack)}>Back Center</button></div>{(patchFront||patchBack)&&<><div className="option-label">Patch size</div>{patchFront&&<div className="option-grid">{addOnSizes.map(s=><button key={s} className={"choice "+(patchSize===s?"choice-active":"")} onClick={()=>setPatchSize(patchSize===s?"":s)}>{s}<small>₹{patchPrices[s]}</small></button>)}</div>}{patchBack&&<div className="choice choice-active" style={{pointerEvents:"none",marginTop:"10px"}}>Back Center — Large<small>₹150</small></div>}<label className="upload-box"><span>Upload your patch</span><small>PNG/JPG · used for selected placement(s)</small><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>filePreview(e,"patch")}/>{patchImage&&<b>✓ Patch uploaded</b>}</label></>}</div>
+            <div className="builder-card"><div className="builder-title"><span>2</span><div><h3>Patch Work <em>Optional</em></h3><p>Choose a front style, back, or both.</p></div></div><div className="option-label">Front patch option</div><div className="option-grid">{frontPatchOptions.map(option=><button key={option} className={"choice "+(frontPatchOption===option?"choice-active":"")} onClick={()=>{setFrontPatchOption(frontPatchOption===option?"":option);if(option!=="Left Chest")setPatchSize("");}}>{option}{option==="Long"&&<small>₹150</small>}{option==="Sleeves"&&<small>₹100</small>}{option==="Multiple"&&<small>Small · ₹50 each</small>}</button>)}</div>{frontPatchOption==="Left Chest"&&<><div className="option-label">Patch size</div><div className="option-grid">{addOnSizes.map(s=><button key={s} className={"choice "+(patchSize===s?"choice-active":"")} onClick={()=>setPatchSize(patchSize===s?"":s)}>{s}<small>₹{patchPrices[s]}</small></button>)}</div></>}{frontPatchOption==="Multiple"&&<><div className="option-label">Multiple small patches</div><select className="quantity-select" value={multipleQuantity} onChange={e=>setMultipleQuantity(Number(e.target.value))}>{multipleQuantities.map(q=><option key={q} value={q}>Quantity: {q} — ₹{q*50}</option>)}</select></>}{patchBack&&<div className="choice choice-active" style={{pointerEvents:"none",marginTop:"10px"}}>Back Center — Large<small>₹150</small></div>}<div className="option-label">Back patch</div><button className={"choice "+(patchBack?"choice-active":"")} onClick={()=>setPatchBack(!patchBack)}>Back Center — Large<small>₹150</small></button>{(frontPatchOption||patchBack)&&<label className="upload-box"><span>Upload your patch</span><small>PNG/JPG · used for selected placement(s)</small><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>filePreview(e,"patch")}/>{patchImage&&<b>✓ Patch uploaded</b>}</label>}</div>
 
             <div className="builder-card"><div className="builder-title"><span>3</span><div><h3>DTF Print <em>Optional</em></h3><p>Small ₹50 · Medium ₹100 · Large ₹150 · Full Print ₹250.</p></div></div><div className="option-label">Print option</div><div className="option-grid">{addOnSizes.map(s=><button key={s} className={"choice "+(printSize===s?"choice-active":"")} onClick={()=>{setPrintSize(printSize===s?"":s);if(printSize===s)setPrintPosition("");}}>{s}<small>₹{printPrices[s]}</small></button>)}<button className={"choice "+(printSize==="Full Print"?"choice-active":"")} onClick={()=>{setPrintSize(printSize==="Full Print"?"":"Full Print");setPrintPosition("");}}>Full Print<small>₹250</small></button></div>{printSize&&<>{printSize!=="Full Print"&&<><div className="option-label">Print placement</div><div className="option-grid two">{printPositions.map(s=><button key={s} className={"choice "+(printPosition===s?"choice-active":"")} onClick={()=>setPrintPosition(s)}>{s}</button>)}</div></>}<label className="upload-box"><span>Upload your DTF print</span><small>PNG/JPG · transparent PNG recommended</small><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>filePreview(e,"print")}/>{printImage&&<b>✓ Print uploaded</b>}</label></>}</div>
 
-            <div className="builder-summary"><div><span>Plain Kurta</span><b>₹249</b></div><div><span>{selectedColour} · Size</span><b>{kurtaSize||"Not selected"}</b></div><div><span>Patch</span><b>{patchPrice?((patchFront?patchSize+" Front (Left Chest)":"")+(patchFront&&patchBack?" + ":"")+(patchBack?"Large Back Center":"")+" · ₹"+patchPrice):"None · ₹0"}</b></div><div><span>DTF Print</span><b>{printSize?printSize+" · "+(printSize==="Full Print"?"Full Kurta":"Placement: "+printPosition)+" · ₹"+printPrice:"None · ₹0"}</b></div><div className="total-row"><span>Total</span><b>₹{total}</b></div><button className="btn btn-gold full-btn" disabled={!ready} onClick={addToCart}>{ready?"Add Custom Kurta to Cart":"Select kurta size to continue"} <ShoppingBag size={17}/></button></div>
+            <div className="builder-summary"><div><span>Plain Kurta</span><b>₹249</b></div><div><span>{selectedColour} · Size</span><b>{kurtaSize||"Not selected"}</b></div><div><span>Patch</span><b>{patchPrice?patchOrderText.replace(" / ₹"," · ₹"): "None · ₹0"}</b></div><div><span>DTF Print</span><b>{printSize?printSize+" · "+(printSize==="Full Print"?"Full Kurta":"Placement: "+printPosition)+" · ₹"+printPrice:"None · ₹0"}</b></div><div className="total-row"><span>Total</span><b>₹{total}</b></div><button className="btn btn-gold full-btn" disabled={!ready} onClick={addToCart}>{ready?"Add Custom Kurta to Cart":"Select kurta size to continue"} <ShoppingBag size={17}/></button></div>
           </div>
         </div>
       </div></section>
 
-      <section className="section how-section" id="how"><div className="container"><div className="section-head"><div><span className="eyebrow">Simple Process</span><h2>Build It Your Way</h2></div></div><div className="process-grid"><div><strong>01</strong><h3>Choose plain kurta</h3><p>₹249 base price. Select colour and S–XXL size.</p></div><div><strong>02</strong><h3>Add patch</h3><p>Front (left chest): Small ₹50 · Medium ₹100 · Large ₹150. Back center: Large ₹150 only.</p></div><div><strong>03</strong><h3>Add DTF print</h3><p>Small ₹50 · Medium ₹100 · Large ₹150 · Full Print ₹250. Placement options are available for regular prints.</p></div><div><strong>04</strong><h3>Upload & preview</h3><p>Upload your own patch/print and see an approximate preview before checkout.</p></div></div></div></section>
+      <section className="section how-section" id="how"><div className="container"><div className="section-head"><div><span className="eyebrow">Simple Process</span><h2>Build It Your Way</h2></div></div><div className="process-grid"><div><strong>01</strong><h3>Choose plain kurta</h3><p>₹249 base price. Select colour and S–XXL size.</p></div><div><strong>02</strong><h3>Add patch</h3><p>Front: Left Chest Small/Medium/Large ₹50/₹100/₹150 · Multiple Small ₹50 each (2–5) · Long ₹150 · Sleeves ₹100. Back Center Large ₹150.</p></div><div><strong>03</strong><h3>Add DTF print</h3><p>Small ₹50 · Medium ₹100 · Large ₹150 · Full Print ₹250. Placement options are available for regular prints.</p></div><div><strong>04</strong><h3>Upload & preview</h3><p>Upload your own patch/print and see an approximate preview before checkout.</p></div></div></div></section>
     </main>
 
     <footer className="footer" id="contact"><div className="container footer-grid"><div><img className="footer-logo" src="/hinglaj-logo.svg" alt="Hinglaj Creation"/><p>Custom men's kurtas. Start with a plain kurta and build your own print and patch combination.</p></div><div><b>Pricing</b><p>Plain Kurta ₹249<br/>Patch ₹50–₹150<br/>DTF Print ₹50–₹150 · Full Print ₹250</p></div><div><b>Connect</b><p>WhatsApp: 7405652991<br/>Instagram: @hinglaj.creation.store</p><div className="btn-row"><a className="btn btn-gold" href="https://wa.me/917405652991" target="_blank"><MessageCircle size={16}/> WhatsApp</a><a className="btn btn-light" href="https://instagram.com/hinglaj.creation.store" target="_blank"><Instagram size={16}/> Instagram</a></div></div></div></footer>
@@ -159,7 +165,7 @@ export default function Home() {
     {cartOpen&&<div className="drawer-backdrop" onClick={()=>setCartOpen(false)}><aside className="cart-drawer" onClick={e=>e.stopPropagation()}>
       <div className="drawer-head"><h3>Checkout & Shipping</h3><button className="icon-btn" onClick={()=>setCartOpen(false)}><X size={18}/></button></div>
       <div className="checkout-summary">
-        <div className="checkout-product-card"><div className="checkout-product-photo" style={{backgroundImage:`url(${kurtaCatalogImage})`,backgroundSize:"500% 300%",backgroundPosition:selectedSpritePosition.backgroundPosition}} aria-label={selectedColour+" kurta preview"}></div><div className="checkout-product-info"><b>{selectedColour} Custom Kurta</b><p>Size: {kurtaSize}<br/>Patch: {patchPrice?((patchFront?patchSize+" Front (Left Chest)":"")+(patchFront&&patchBack?" + ":"")+(patchBack?"Large Back Center":"")):"None"}<br/>Print: {printSize?printSize+" · "+(printPosition||"Full Print"):"None"}</p></div></div>
+        <div className="checkout-product-card"><div className="checkout-product-photo" style={{backgroundImage:`url(${kurtaCatalogImage})`,backgroundSize:"500% 300%",backgroundPosition:selectedSpritePosition.backgroundPosition}} aria-label={selectedColour+" kurta preview"}></div><div className="checkout-product-info"><b>{selectedColour} Custom Kurta</b><p>Size: {kurtaSize}<br/>Patch: {patchOrderText.replace(" / ₹"+patchPrice,"")}<br/>Print: {printSize?printSize+" · "+(printPosition||"Full Print"):"None"}</p></div></div>
 
         <div className="shipping-form shipping-included"><div className="shipping-form-title">Delivery Details</div>
           <input value={customerName} onChange={e=>setCustomerName(e.target.value)} placeholder="Full Name" autoComplete="name"/>
