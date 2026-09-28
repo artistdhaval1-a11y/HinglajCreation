@@ -81,17 +81,22 @@ export default function Home() {
       </div></div></section>
 
       <section className="section shop-section" id="shop"><div className="container">
-        <div className="section-head"><div><span className="eyebrow">Step 01</span><h2>Choose Your Plain Kurta</h2><p>Every custom order starts at <strong>₹225</strong>. Choose a colour and add the plain kurta to your cart.</p></div></div>
-        <div className="plain-grid">{filtered.map((p,i)=><article className={"plain-card "+(selectedColour===p[2]?"plain-selected":"")} key={p[2]}>
-          <button className="plain-visual kurta-photo" style={{backgroundImage:"url("+kurtaCatalogImage+")",backgroundPosition:((i%3)*50)+"% "+(Math.floor(i/3)*50)+"%"}} onClick={()=>{setSelectedColour(p[2]);setSelectedTone(p[3]);}} aria-label={p[2]+" kurta"} />
-          <div className="plain-body"><div className="product-type">{p[2]}</div><h3>{p[0]}</h3><div className="meta">S–XXL · Plain base</div><div className="product-bottom"><span className="price">₹225</span><button className="btn btn-dark" onClick={()=>choosePlain(p[2],p[3])}>Add to Cart <ShoppingBag size={15}/></button></div></div>
-        </article>)}</div>
+        <div className="section-head"><div><span className="eyebrow">Step 01</span><h2>Choose Your Plain Kurta</h2><p>Every custom order starts at <strong>₹225</strong>. Select one colour below, then continue to size and customisation.</p></div></div>
+        <div className="colour-picker-card">
+          <div className="colour-collage" role="group" aria-label="Choose kurta colour">
+            {colours.map(([name,tone],i)=><button key={name} className={"colour-tile "+(selectedColour===name?"colour-tile-active":"")} style={{"--tile-tone":tone} as React.CSSProperties} onClick={()=>{setSelectedColour(name);setSelectedTone(tone);}} aria-label={"Select "+name+" kurta"}><span className="colour-tile-image" style={{backgroundImage:"url("+kurtaCatalogImage+")"}}/><span className="colour-tile-overlay"/><span className="colour-tile-label">{name}</span></button>)}
+          </div>
+          <div className="colour-picker-info">
+            <div><span className="eyebrow">Selected Colour</span><h3>{selectedColour}</h3><p>Plain kurta · ₹225 · Sizes S–XXL</p></div>
+            <button className="btn btn-gold" onClick={()=>document.getElementById("customise")?.scrollIntoView({behavior:"smooth"})}>Continue with {selectedColour} <ArrowRight size={17}/></button>
+          </div>
+        </div>
       </div></section>
 
       <section className="section customise-section" id="customise"><div className="container">
         <div className="section-head"><div><span className="eyebrow">Step 02</span><h2>Customize Your Kurta</h2><p>Base: <strong>{selectedColour}</strong> · Plain kurta ₹225</p></div></div>
         <div className="builder">
-          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-kurta" style={{"--pc":selectedTone} as React.CSSProperties}>
+          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo" style={{backgroundImage:"url("+kurtaCatalogImage+")","--pc":selectedTone} as React.CSSProperties}><span className="preview-photo-tint"/>
             {patchImage&&patchFront&&<img className={"uploaded-art patch-art "+patchSize?.toLowerCase()+" left-chest"} src={patchImage} alt="Uploaded front patch preview"/>}
             {patchImage&&patchBack&&<img className="uploaded-art patch-art large back" src={patchImage} alt="Uploaded back patch preview"/>}
             {!patchImage&&patchFront&&patchSize&&<span className={"preview-detail patch-detail "+patchSize.toLowerCase()+" left-chest"}>PATCH</span>}
