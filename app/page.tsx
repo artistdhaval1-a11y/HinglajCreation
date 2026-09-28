@@ -8,6 +8,7 @@ const colours = [
   ["Red","#b51f2a"],
   ["Baby Pink","#f3b6c5"],
   ["Dark Pink","#c94f78"],
+  ["Maroon","#7b2028"],
   ["Sky Blue","#8db8ca"],
   ["Navy Blue","#173b5b"],
   ["Yellow","#e5c43d"],
@@ -40,6 +41,8 @@ export default function Home() {
   const [cartOpen,setCartOpen]=useState(false);
   const [menuOpen,setMenuOpen]=useState(false);
   const [added,setAdded]=useState(false);
+  const selectedIndex=colours.findIndex(([name])=>name===selectedColour);
+  const selectedSpritePosition={backgroundPosition:`${(selectedIndex%5)*25}% ${Math.floor(selectedIndex/5)*50}%`};
 
   const patchPrice=(patchFront && patchSize ? patchPrices[patchSize] : 0)+(patchBack ? patchPrices["Large"] : 0);
   const printPrice=printSize ? printPrices[printSize] : 0;
@@ -92,7 +95,7 @@ export default function Home() {
         <div className="section-head"><div><span className="eyebrow">Step 01</span><h2>Choose Your Plain Kurta</h2><p>Every custom order starts at <strong>₹225</strong>. Select one colour below, then continue to size and customisation.</p></div></div>
         <div className="colour-picker-card">
           <div className="colour-collage" role="group" aria-label="Choose kurta colour">
-            {colours.map(([name,tone])=><button key={name} className={"colour-tile "+(selectedColour===name?"colour-tile-active":"")} style={{"--tile-tone":tone} as React.CSSProperties} onClick={()=>{setSelectedColour(name);setSelectedTone(tone);}} aria-label={"Select "+name+" kurta"}><span className="colour-tile-image" style={{backgroundImage:"url("+kurtaCatalogImage+")"}}/><span className="colour-tile-overlay"/><span className="colour-tile-label">{name}</span></button>)}
+            {colours.map(([name,tone])=><button key={name} className={"colour-tile "+(selectedColour===name?"colour-tile-active":"")} style={{"--tile-tone":tone,backgroundPosition:`${(colours.findIndex(([n])=>n===name)%5)*25}% ${Math.floor(colours.findIndex(([n])=>n===name)/5)*50}%`} as React.CSSProperties} onClick={()=>{setSelectedColour(name);setSelectedTone(tone);}} aria-label={"Select "+name+" kurta"}><span className="colour-tile-image" style={{backgroundImage:"url("+kurtaCatalogImage+")"}}/><span className="colour-tile-label">{name}</span></button>)}
           </div>
           <div className="colour-picker-info">
             <div><span className="eyebrow">Selected Colour</span><h3>{selectedColour}</h3><p>Plain kurta · ₹225 · Sizes S–XXL</p></div>
@@ -104,7 +107,7 @@ export default function Home() {
       <section className="section customise-section" id="customise"><div className="container">
         <div className="section-head"><div><span className="eyebrow">Step 02</span><h2>Customize Your Kurta</h2><p>Base: <strong>{selectedColour}</strong> · Plain kurta ₹225</p></div></div>
         <div className="builder">
-          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo" style={{backgroundImage:"url("+kurtaCatalogImage+")","--pc":selectedTone} as React.CSSProperties}><span className="preview-photo-tint"/>
+          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo" style={{backgroundImage:"url("+kurtaCatalogImage+")",...selectedSpritePosition} as React.CSSProperties}>
             {patchImage&&patchFront&&<img className={"uploaded-art patch-art "+patchSize?.toLowerCase()+" left-chest"} src={patchImage} alt="Uploaded front patch preview"/>}
             {patchImage&&patchBack&&<img className="uploaded-art patch-art large back" src={patchImage} alt="Uploaded back patch preview"/>}
             {!patchImage&&patchFront&&patchSize&&<span className={"preview-detail patch-detail "+patchSize.toLowerCase()+" left-chest"}>PATCH</span>}
