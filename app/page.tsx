@@ -21,6 +21,8 @@ export default function Home() {
   const [selectedTone,setSelectedTone]=useState("#f5f2ea");
   const [kurtaSize,setKurtaSize]=useState("");
   const [patchSize,setPatchSize]=useState("");
+  const [patchFront,setPatchFront]=useState(false);
+  const [patchBack,setPatchBack]=useState(false);
   const [printSize,setPrintSize]=useState("");
   const [printPosition,setPrintPosition]=useState("");
   const [patchImage,setPatchImage]=useState("");
@@ -30,7 +32,7 @@ export default function Home() {
   const [added,setAdded]=useState(false);
 
   const filtered=useMemo(()=>products.filter(p=>(p[0]+" "+p[2]).toLowerCase().includes(search.toLowerCase())),[search]);
-  const patchPrice=patchSize ? patchPrices[patchSize]+patchPrices["Large"] : 0;
+  const patchPrice=(patchFront && patchSize ? patchPrices[patchSize] : 0)+(patchBack ? patchPrices["Large"] : 0);
   const printPrice=printSize ? printPrices[printSize] : 0;
   const total=225+patchPrice+printPrice;
   const ready=!!kurtaSize && (!printSize || !!printPosition);
@@ -63,7 +65,7 @@ export default function Home() {
     }
     window.open("https://wa.me/917405652991?text="+encodeURIComponent(text), "_blank");
   }
-  const orderText="Hi Hinglaj Creation, I want to order a custom kurta. Colour: "+selectedColour+"; Size: "+kurtaSize+"; Base: ₹225; Patch: "+(patchSize?patchSize+" Front (Left Chest) + Large Back Center / ₹"+patchPrice:"None")+"; Print: "+(printSize?printSize+" / "+printPosition+" / ₹"+printPrice:"None")+"; Total: ₹"+total;
+  const orderText="Hi Hinglaj Creation, I want to order a custom kurta. Colour: "+selectedColour+"; Size: "+kurtaSize+"; Base: ₹225; Patch: "+(patchPrice?((patchFront?patchSize+" Front (Left Chest)":"")+(patchFront&&patchBack?" + ":"")+(patchBack?"Large Back Center":"")+" / ₹"+patchPrice):"None")+"+"; Print: "+(printSize?printSize+" / "+printPosition+" / ₹"+printPrice:"None")+"; Total: ₹"+total;
 
   return <>
     <header className="nav"><div className="container nav-inner">
@@ -99,7 +101,7 @@ export default function Home() {
           <div className="builder-options">
             <div className="builder-card"><div className="builder-title"><span>1</span><div><h3>Kurta Size</h3><p>Choose your fitting size.</p></div></div><div className="option-grid kurta-size-grid">{sizes.map(s=><button key={s} className={"choice "+(kurtaSize===s?"choice-active":"")} onClick={()=>setKurtaSize(s)}>{s}</button>)}</div></div>
 
-            <div className="builder-card"><div className="builder-title"><span>2</span><div><h3>Patch Work <em>Optional</em></h3><p>Patch is applied on both Front (Left Chest) + Back Center.</p></div></div>{<><div className="option-label">Front (Left Chest) — choose size</div><div className="option-grid">{addOnSizes.map(s=><button key={s} className={"choice "+(patchSize===s?"choice-active":"")} onClick={()=>setPatchSize(patchSize===s?"":s)}>{s}<small>₹{patchPrices[s]}</small></button>)}</div><div className="option-label">Back Center — Large</div><div className="choice choice-active" style={{pointerEvents:"none"}}>Large<small>₹150</small></div><label className="upload-box"><span>Upload your patch</span><small>PNG/JPG · used for both front and back</small><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>filePreview(e,"patch")}/>{patchImage&&<b>✓ Patch uploaded</b>}</label></>}</div>
+            <div className="builder-card"><div className="builder-title"><span>2</span><div><h3>Patch Work <em>Optional</em></h3><p>Choose Front, Back, or both.</p></div></div><div className="option-label">Patch placement</div><div className="option-grid two"><button className={"choice "+(patchFront?"choice-active":"")} onClick={()=>setPatchFront(!patchFront)}>Front (Left Chest)</button><button className={"choice "+(patchBack?"choice-active":"")} onClick={()=>setPatchBack(!patchBack)}>Back Center</button></div>{(patchFront||patchBack)&&<><div className="option-label">Patch size</div>{patchFront&&<div className="option-grid">{addOnSizes.map(s=><button key={s} className={"choice "+(patchSize===s?"choice-active":"")} onClick={()=>setPatchSize(patchSize===s?"":s)}>{s}<small>₹{patchPrices[s]}</small></button>)}</div>}{patchBack&&<div className="choice choice-active" style={{pointerEvents:"none",marginTop:"10px"}}>Back Center — Large<small>₹150</small></div>}<label className="upload-box"><span>Upload your patch</span><small>PNG/JPG · used for selected placement(s)</small><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>filePreview(e,"patch")}/>{patchImage&&<b>✓ Patch uploaded</b>}</label></>}</div>
 
             <div className="builder-card"><div className="builder-title"><span>3</span><div><h3>DTF Print <em>Optional</em></h3><p>₹50 / ₹100 / ₹150 according to size.</p></div></div><div className="option-label">Print size</div><div className="option-grid">{addOnSizes.map(s=><button key={s} className={"choice "+(printSize===s?"choice-active":"")} onClick={()=>{setPrintSize(printSize===s?"":s);if(printSize===s)setPrintPosition("");}}>{s}<small>₹{printPrices[s]}</small></button>)}</div>{printSize&&<><div className="option-label">Print placement</div><div className="option-grid two">{printPositions.map(s=><button key={s} className={"choice "+(printPosition===s?"choice-active":"")} onClick={()=>setPrintPosition(s)}>{s}</button>)}</div><label className="upload-box"><span>Upload your DTF print</span><small>PNG/JPG · transparent PNG recommended</small><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>filePreview(e,"print")}/>{printImage&&<b>✓ Print uploaded</b>}</label></>}</div>
 
@@ -115,8 +117,8 @@ export default function Home() {
 
     {cartOpen&&<div className="drawer-backdrop" onClick={()=>setCartOpen(false)}><aside className="cart-drawer" onClick={e=>e.stopPropagation()}>
       <div className="drawer-head"><h3>Checkout Summary</h3><button className="icon-btn" onClick={()=>setCartOpen(false)}><X size={18}/></button></div>
-      <div className="checkout-summary"><div className="cart-item"><span className="cart-thumb" style={{background:"linear-gradient(145deg,"+selectedTone+",#d4af37)"}}/><div><b>{selectedColour} Custom Kurta</b><p>Size: {kurtaSize}<br/>Patch: {patchSize?patchSize+" Front (Left Chest) + Large Back Center":"None"}<br/>Print: {printSize?printSize+" · "+printPosition:"None"}</p></div></div>
-      <div className="checkout-lines"><div><span>Plain Kurta</span><b>₹225</b></div>{patchSize&&<div><span>{patchSize} Patch — Front + Back</span><b>+ ₹{patchPrice}</b></div>}{printSize&&<div><span>{printSize} DTF Print</span><b>+ ₹{printPrice}</b></div>}<div className="total-row"><span>Total</span><b>₹{total}</b></div></div>
+      <div className="checkout-summary"><div className="cart-item"><span className="cart-thumb" style={{background:"linear-gradient(145deg,"+selectedTone+",#d4af37)"}}/><div><b>{selectedColour} Custom Kurta</b><p>Size: {kurtaSize}<br/>Patch: {patchPrice?((patchFront?patchSize+" Front (Left Chest)":"")+(patchFront&&patchBack?" + ":"")+(patchBack?"Large Back Center":"")):"None"}<br/>Print: {printSize?printSize+" · "+printPosition:"None"}</p></div></div>
+      <div className="checkout-lines"><div><span>Plain Kurta</span><b>₹225</b></div>{patchSize&&<div><span>Patch Work</span><b>+ ₹{patchPrice}</b></div>}{printSize&&<div><span>{printSize} DTF Print</span><b>+ ₹{printPrice}</b></div>}<div className="total-row"><span>Total</span><b>₹{total}</b></div></div>
       <button type="button" className="btn btn-gold cart-wa" onClick={placeOrderOnWhatsApp}>Place Order on WhatsApp <MessageCircle size={17}/></button><p className="whatsapp-note">{(patchImage||printImage)?"Your uploaded patch/print will be attached when your phone/browser supports WhatsApp file sharing.":"Your order details will open in WhatsApp."}</p></div>
     </aside></div>}
   </>;
