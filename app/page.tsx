@@ -44,6 +44,26 @@ export default function Home() {
     reader.readAsDataURL(file);
   }
   function addToCart(){if(ready){setAdded(true);setCartOpen(true);}}
+  async function placeOrderOnWhatsApp(){
+    const text = orderText + (patchImage || printImage ? "; Uploaded artwork: attached with this order." : "");
+    const files: File[] = [];
+    async function dataUrlToFile(dataUrl:string, name:string){
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      return new File([blob], name, { type: blob.type || "image/jpeg" });
+    }
+    try{
+      if(patchImage) files.push(await dataUrlToFile(patchImage, "hinglaj-patch.jpg"));
+      if(printImage) files.push(await dataUrlToFile(printImage, "hinglaj-dtf-print.jpg"));
+      if(files.length && typeof navigator !== "undefined" && "share" in navigator && "canShare" in navigator && navigator.canShare({files})){
+        await navigator.share({title:"Hinglaj Creation Order", text, files});
+        return;
+      }
+    }catch(error){
+      if(error instanceof DOMException && error.name === "AbortError") return;
+    }
+    window.open("https://wa.me/917405652991?text="+encodeURIComponent(text), "_blank");
+  }
   const orderText="Hi Hinglaj Creation, I want to order a custom kurta. Colour: "+selectedColour+"; Size: "+kurtaSize+"; Base: ₹225; Patch: "+(patchSize?patchSize+" / "+patchPosition+" / ₹"+patchPrice:"None")+"; Print: "+(printSize?printSize+" / "+printPosition+" / ₹"+printPrice:"None")+"; Total: ₹"+total;
 
   return <>
@@ -98,7 +118,7 @@ export default function Home() {
       <div className="drawer-head"><h3>Checkout Summary</h3><button className="icon-btn" onClick={()=>setCartOpen(false)}><X size={18}/></button></div>
       <div className="checkout-summary"><div className="cart-item"><span className="cart-thumb" style={{background:"linear-gradient(145deg,"+selectedTone+",#d4af37)"}}/><div><b>{selectedColour} Custom Kurta</b><p>Size: {kurtaSize}<br/>Patch: {patchSize?patchSize+" · "+patchPosition:"None"}<br/>Print: {printSize?printSize+" · "+printPosition:"None"}</p></div></div>
       <div className="checkout-lines"><div><span>Plain Kurta</span><b>₹225</b></div>{patchSize&&<div><span>{patchSize} Patch</span><b>+ ₹{patchPrice}</b></div>}{printSize&&<div><span>{printSize} DTF Print</span><b>+ ₹{printPrice}</b></div>}<div className="total-row"><span>Total</span><b>₹{total}</b></div></div>
-      <a className="btn btn-gold cart-wa" href={"https://wa.me/917405652991?text="+encodeURIComponent(orderText)} target="_blank">Place Order on WhatsApp <MessageCircle size={17}/></a></div>
+      <button type="button" className="btn btn-gold cart-wa" onClick={placeOrderOnWhatsApp}>Place Order on WhatsApp <MessageCircle size={17}/></button><p className="whatsapp-note">{(patchImage||printImage)?"Your uploaded patch/print will be attached when your phone/browser supports WhatsApp file sharing.":"Your order details will open in WhatsApp."}</p></div>
     </aside></div>}
   </>;
 }
