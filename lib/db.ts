@@ -1,10 +1,6 @@
 import { Pool } from "pg";
 
-declare global {
-  var hinglajPool: Pool | undefined;
-}
-
-const pool = global.hinglajPool ?? new Pool({
+const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   max: 5,
   idleTimeoutMillis: 30000,
@@ -12,7 +8,6 @@ const pool = global.hinglajPool ?? new Pool({
   ssl: process.env.DATABASE_URL?.includes("sslmode=require") ? { rejectUnauthorized: false } : undefined,
 });
 
-if (process.env.NODE_ENV !== "production") global.hinglajPool = pool;
 
 let schemaReady: Promise<void> | null = null;
 
