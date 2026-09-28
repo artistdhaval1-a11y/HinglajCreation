@@ -1,13 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 310">
-<rect width="520" height="310" rx="18" fill="#fffaf2"/>
-<g transform="translate(185 18)" fill="#b71c1c">
-<path d="M0 0h150v48H72v78h78v48H0z"/>
-<path d="M0 0h48v174H0z"/>
-<path d="M48 48h76v48H48z" fill="#fffaf2"/>
-<path d="M108 126h42v48h-42z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 683">
+<rect width="2048" height="683" fill="white"/>
+<g transform="translate(205 136)" fill="#ff1f2b">
+  <path d="M0 0h128v47H82v68h46v47H0z"/>
+  <path d="M0 0h46v162H0z"/>
+  <path d="M46 47h77v47H46z" fill="white"/>
+  <path d="M82 115h46v47H82z"/>
 </g>
-<text x="260" y="222" text-anchor="middle" font-family="Montserrat,Arial,sans-serif" font-size="52" font-weight="800" letter-spacing="2" fill="#b71c1c">HINGLAJ</text>
-<text x="260" y="263" text-anchor="middle" font-family="cursive" font-size="43" font-style="italic" fill="#0b7a4b">Creation</text>
-<path d="M120 278h280" stroke="#b71c1c" stroke-width="2"/>
-<text x="260" y="299" text-anchor="middle" font-family="Montserrat,Arial,sans-serif" font-size="9" letter-spacing="4" fill="#193431">TRADITION WITH A TOUCH OF ART</text>
+<text x="885" y="297" font-family="Arial,Helvetica,sans-serif" font-size="190" font-weight="700" letter-spacing="2" fill="#ff1f2b">HINGLAJ</text>
+<text x="1040" y="545" text-anchor="middle" font-family="'Brush Script MT','Segoe Script',cursive" font-size="150" font-style="italic" fill="#00b85a">Creation</text>
 </svg>
