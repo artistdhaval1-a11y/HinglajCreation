@@ -20,7 +20,7 @@ const colours = [
   ["Lavender","#b9a9cf"],
   ["Purple","#70458f"]
 ];
-const kurtaCatalogImage = "/kurta-sprite.webp";
+const kurtaCatalogImage = "/kurta-preview.webp";
 const sizes = ["S","M","L","XL","XXL"];
 const addOnSizes = ["Small","Medium","Large"];
 const printPositions = ["Front","Back"];
@@ -41,8 +41,6 @@ export default function Home() {
   const [cartOpen,setCartOpen]=useState(false);
   const [menuOpen,setMenuOpen]=useState(false);
   const [added,setAdded]=useState(false);
-  const selectedIndex=colours.findIndex(([name])=>name===selectedColour);
-  const previewPosition={backgroundPosition:((selectedIndex%5)*25)+"% "+(Math.floor(selectedIndex/5)*50)+"%"};
   const patchPrice=(patchFront && patchSize ? patchPrices[patchSize] : 0)+(patchBack ? patchPrices["Large"] : 0);
   const printPrice=printSize ? printPrices[printSize] : 0;
   const total=225+patchPrice+printPrice;
@@ -105,7 +103,7 @@ export default function Home() {
       <section className="section customise-section" id="customise"><div className="container">
         <div className="section-head"><div><span className="eyebrow">Step 02</span><h2>Customize Your Kurta</h2><p>Base: <strong>{selectedColour}</strong> · Plain kurta ₹225</p></div></div>
         <div className="builder">
-          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo" style={{backgroundImage:"url("+kurtaCatalogImage+")",...previewPosition}}>
+          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo" style={{backgroundImage:"url("+kurtaCatalogImage+")"}}>
             {patchImage&&patchFront&&<img className={"uploaded-art patch-art "+patchSize?.toLowerCase()+" left-chest"} src={patchImage} alt="Uploaded front patch preview"/>}
             {patchImage&&patchBack&&<img className="uploaded-art patch-art large back" src={patchImage} alt="Uploaded back patch preview"/>}
             {!patchImage&&patchFront&&patchSize&&<span className={"preview-detail patch-detail "+patchSize.toLowerCase()+" left-chest"}>PATCH</span>}
