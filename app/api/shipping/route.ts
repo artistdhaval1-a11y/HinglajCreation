@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     const height = Number(body.height ?? 5);
     const declaredValue = Number(body.declaredValue ?? 0);
 
-    if (!/^\\d{6}$/.test(deliveryPincode)) {
+    if (!/^\d{6}$/.test(deliveryPincode)) {
       return NextResponse.json({ error: "Please enter a valid 6-digit delivery pincode." }, { status: 400 });
     }
 
