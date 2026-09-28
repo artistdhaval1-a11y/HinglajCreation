@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, useMemo, useState } from "react";
-import { ArrowRight, Check, Instagram, Menu, MessageCircle, Search, ShoppingBag, X } from "lucide-react";
+import { ArrowRight, Check, Instagram, Menu, MessageCircle, ShoppingBag, X } from "lucide-react";
 
 const colours = [
   ["White","#f5f2ea"],["Maroon","#7b2028"],["Mustard","#c99a21"],["Navy Blue","#173b5b"],
@@ -16,7 +16,6 @@ const patchPrices: Record<string,number> = { Small:50, Medium:100, Large:150 };
 const printPrices: Record<string,number> = { Small:50, Medium:100, Large:150 };
 
 export default function Home() {
-  const [search,setSearch]=useState("");
   const [selectedColour,setSelectedColour]=useState("White");
   const [selectedTone,setSelectedTone]=useState("#f5f2ea");
   const [kurtaSize,setKurtaSize]=useState("");
@@ -31,13 +30,11 @@ export default function Home() {
   const [menuOpen,setMenuOpen]=useState(false);
   const [added,setAdded]=useState(false);
 
-  const filtered=useMemo(()=>products.filter(p=>(p[0]+" "+p[2]).toLowerCase().includes(search.toLowerCase())),[search]);
   const patchPrice=(patchFront && patchSize ? patchPrices[patchSize] : 0)+(patchBack ? patchPrices["Large"] : 0);
   const printPrice=printSize ? printPrices[printSize] : 0;
   const total=225+patchPrice+printPrice;
   const ready=!!kurtaSize && (!patchFront || !!patchSize) && (!printSize || !!printPosition);
 
-  function choosePlain(colour:string,tone:string){setSelectedColour(colour);setSelectedTone(tone);setAdded(true);document.getElementById("customise")?.scrollIntoView({behavior:"smooth"});}
   function filePreview(e:ChangeEvent<HTMLInputElement>,type:"patch"|"print"){
     const file=e.target.files?.[0]; if(!file)return;
     const reader=new FileReader();
@@ -71,7 +68,7 @@ export default function Home() {
     <header className="nav"><div className="container nav-inner">
       <a className="logo-image" href="#"><img src="/hinglaj-logo.svg" alt="Hinglaj Creation"/></a>
       <nav className={"nav-links "+(menuOpen?"nav-links-open":"")}><a href="#shop" onClick={()=>setMenuOpen(false)}>Shop</a><a href="#customise" onClick={()=>setMenuOpen(false)}>Customise</a><a href="#how" onClick={()=>setMenuOpen(false)}>How It Works</a><a href="#contact" onClick={()=>setMenuOpen(false)}>Contact</a></nav>
-      <div className="nav-actions"><div className="search-wrap"><Search size={17}/><input placeholder="Search colour" value={search} onChange={e=>setSearch(e.target.value)}/></div><button className="icon-btn mobile-menu-btn" onClick={()=>setMenuOpen(!menuOpen)}>{menuOpen?<X size={18}/>:<Menu size={18}/>}</button><button className="icon-btn" onClick={()=>setCartOpen(true)}><ShoppingBag size={18}/>{added&&<span className="cart-badge">1</span>}</button></div>
+      <div className="nav-actions"><button className="icon-btn mobile-menu-btn" onClick={()=>setMenuOpen(!menuOpen)}>{menuOpen?<X size={18}/>:<Menu size={18}/>}</button><button className="icon-btn" onClick={()=>setCartOpen(true)}><ShoppingBag size={18}/>{added&&<span className="cart-badge">1</span>}</button></div>
     </div></header>
 
     <main>
