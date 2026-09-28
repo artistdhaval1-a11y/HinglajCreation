@@ -220,3 +220,33 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 .print-detail.small{width:38%!important;height:35%!important}
 .print-detail.medium{width:52%!important;height:50%!important}
 .print-detail.large{width:68%!important;height:68%!important}
+
+/* Final placement tuning */
+.preview-detail.left-chest,
+.uploaded-art.left-chest{
+  left:18%!important;
+  top:27%!important;
+  transform:none!important;
+}
+.preview-detail.back,
+.uploaded-art.back{
+  left:50%!important;
+  top:48%!important;
+  transform:translateX(-50%)!important;
+}
+.print-detail.front,
+.uploaded-art.front{
+  left:50%!important;
+  top:14%!important;
+  transform:translateX(-50%)!important;
+}
+.print-detail.back,
+.uploaded-art.back{
+  left:50%!important;
+  top:14%!important;
+  transform:translateX(-50%)!important;
+}
+.print-detail.front,
+.print-detail.back{
+  border-radius:2px!important;
+}
