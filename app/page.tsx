@@ -65,7 +65,7 @@ export default function Home() {
     setShippingCharge(null);
     setShippingCourier("");
     setShippingEtD("");
-    if(!customerName.trim() || !customerPhone.trim() || !shippingAddress.trim() || !shippingCity.trim() || !shippingState.trim() || !/^\\d{6}$/.test(shippingPincode)){
+    if(!customerName.trim() || !customerPhone.trim() || !shippingAddress.trim() || !shippingCity.trim() || !shippingState.trim() || !/^\d{6}$/.test(shippingPincode)){
       setShippingError("Please enter your name, mobile, full address, city, state and a valid 6-digit pincode.");
       return;
     }
@@ -167,18 +167,18 @@ export default function Home() {
     {cartOpen&&<div className="drawer-backdrop" onClick={()=>setCartOpen(false)}><aside className="cart-drawer" onClick={e=>e.stopPropagation()}>
       <div className="drawer-head"><h3>Checkout & Shipping</h3><button className="icon-btn" onClick={()=>setCartOpen(false)}><X size={18}/></button></div>
       <div className="checkout-summary">
-        <div className="cart-item"><span className="cart-thumb" style={{background:"linear-gradient(145deg,"+selectedTone+",#d4af37)"}}/><div><b>{selectedColour} Custom Kurta</b><p>Size: {kurtaSize}<br/>Patch: {patchPrice?((patchFront?patchSize+" Front (Left Chest)":"")+(patchFront&&patchBack?" + ":"")+(patchBack?"Large Back Center":"")):"None"}<br/>Print: {printSize?printSize+" · "+(printPosition||"Full Print"):"None"}</p></div></div>
+        <div className="checkout-product-card"><div className="checkout-product-photo" style={{backgroundImage:`url(${kurtaCatalogImage})`,backgroundSize:"500% 300%",backgroundPosition:selectedSpritePosition.backgroundPosition}} aria-label={selectedColour+" kurta preview"}></div><div className="checkout-product-info"><b>{selectedColour} Custom Kurta</b><p>Size: {kurtaSize}<br/>Patch: {patchPrice?((patchFront?patchSize+" Front (Left Chest)":"")+(patchFront&&patchBack?" + ":"")+(patchBack?"Large Back Center":"")):"None"}<br/>Print: {printSize?printSize+" · "+(printPosition||"Full Print"):"None"}</p></div></div>
 
         <div className="shipping-form">
           <div className="shipping-form-title">Delivery Details</div>
           <input value={customerName} onChange={e=>setCustomerName(e.target.value)} placeholder="Full Name" autoComplete="name"/>
-          <input value={customerPhone} onChange={e=>setCustomerPhone(e.target.value.replace(/\\D/g,"").slice(0,10))} placeholder="Mobile Number" inputMode="numeric" autoComplete="tel"/>
+          <input value={customerPhone} onChange={e=>setCustomerPhone(e.target.value.replace(/\D/g,"").slice(0,10))} placeholder="Mobile Number" inputMode="numeric" autoComplete="tel"/>
           <textarea value={shippingAddress} onChange={e=>setShippingAddress(e.target.value)} placeholder="Full Delivery Address" rows={3} autoComplete="street-address"/>
           <div className="shipping-form-grid">
             <input value={shippingCity} onChange={e=>setShippingCity(e.target.value)} placeholder="City" autoComplete="address-level2"/>
             <input value={shippingState} onChange={e=>setShippingState(e.target.value)} placeholder="State" autoComplete="address-level1"/>
           </div>
-          <input value={shippingPincode} onChange={e=>setShippingPincode(e.target.value.replace(/\\D/g,"").slice(0,6))} placeholder="Pincode" inputMode="numeric" autoComplete="postal-code"/>
+          <input value={shippingPincode} onChange={e=>setShippingPincode(e.target.value.replace(/\D/g,"").slice(0,6))} placeholder="Pincode" inputMode="numeric" autoComplete="postal-code"/>
           <button type="button" className="btn btn-dark full-btn" onClick={calculateShipping} disabled={shippingLoading}>
             {shippingLoading?"Checking shipping...":"Calculate Shipping"} <ArrowRight size={16}/>
           </button>
