@@ -186,3 +186,6 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
  .logo-image{width:125px;height:50px}.logo-image img{width:125px}
  .plain-grid{grid-template-columns:1fr}.plain-visual{height:290px}.builder-preview{padding:16px}.preview-stage{height:360px}.preview-kurta{width:48%}.builder-card,.builder-summary{padding:16px}.process-grid{grid-template-columns:1fr}.builder-title h3{font-size:15px}.builder-title em{display:block;margin:4px 0 0}.footer-logo{width:160px}
 }
+
+.kurta-size-grid{grid-template-columns:repeat(5,1fr)}
+@media(max-width:560px){.kurta-size-grid{grid-template-columns:repeat(5,1fr)}.kurta-size-grid .choice{padding:10px 4px}}
