@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, ensureSchema } from "@/lib/db";
+import { db, ensureSchema } from "../../../lib/db";
 
 export const dynamic = "force-dynamic";
 const STATUSES = ["Order Received","Confirmed","In Production","Dispatched","Delivered","Cancelled"];
