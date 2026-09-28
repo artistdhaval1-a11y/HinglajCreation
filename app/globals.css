@@ -291,4 +291,14 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 }
 
 /* Real kurta catalog photo grid */
-.kurta-photo{background-repeat:no-repeat;background-size:300% auto;background-color:#f5f2ea;background-position-y:top;}
+.kurta-photo{background-repeat:no-repeat;background-size:cover;background-color:#f5f2ea;background-position:center;position:relative;overflow:hidden;}
+.kurta-photo::after{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.72;clip-path:polygon(25% 0,38% 0,50% 7%,62% 0,75% 0,85% 18%,82% 100%,18% 100%,15% 18%);}
+.plain-card:nth-child(1) .kurta-photo::after{background:#f5f2ea;}
+.plain-card:nth-child(2) .kurta-photo::after{background:#7b2028;}
+.plain-card:nth-child(3) .kurta-photo::after{background:#c99a21;}
+.plain-card:nth-child(4) .kurta-photo::after{background:#173b5b;}
+.plain-card:nth-child(5) .kurta-photo::after{background:#526044;}
+.plain-card:nth-child(6) .kurta-photo::after{background:#8db8ca;}
+.plain-card:nth-child(7) .kurta-photo::after{background:#e8b49d;}
+.plain-card:nth-child(8) .kurta-photo::after{background:#b9a9cf;}
+.plain-card:nth-child(9) .kurta-photo::after{background:#222222;}
