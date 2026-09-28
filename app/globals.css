@@ -128,9 +128,9 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
  .hero-badge{font-size:11px;top:22px;right:22px}.hero-caption{font-size:8px;bottom:18px}.trust-row{gap:10px;font-size:10px}.filter{font-size:11px;padding:8px 10px}.feature-grid{grid-template-columns:1fr}.feature-grid div{border-right:0!important;border-bottom:1px solid var(--line)!important}.feature-grid div:last-child{border-bottom:0!important}.cart-drawer{padding:18px}
 }
 
-.logo-image{display:flex;align-items:center;width:178px;height:62px;overflow:hidden}
-.logo-image img{width:178px;height:auto;display:block}
-.footer-logo{width:190px;height:auto;background:var(--paper);border-radius:12px;display:block}
+.logo-image{display:flex;align-items:center;width:205px;height:58px;overflow:hidden}
+.logo-image img{width:205px;height:auto;display:block}
+.footer-logo{width:230px;height:auto;background:#fff;border-radius:8px;display:block}
 .hero-custom .hero-grid{min-height:570px}
 .hero-custom .hero-copy{padding-top:62px;padding-bottom:62px}
 .shop-controls-wide{margin:-8px 0 24px;justify-content:flex-start}
@@ -178,12 +178,12 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 .process-grid h3{font-size:22px;margin:12px 0 8px}
 .process-grid p{margin:0;color:var(--muted);line-height:1.6;font-size:13px}
 @media(max-width:900px){
- .logo-image{width:150px;height:55px}.logo-image img{width:150px}
+ .logo-image{width:165px;height:52px}.logo-image img{width:165px}
  .plain-grid{grid-template-columns:repeat(2,1fr)}
  .builder{grid-template-columns:1fr}.builder-preview{position:relative;top:auto}.preview-stage{height:420px}.process-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:560px){
- .logo-image{width:125px;height:50px}.logo-image img{width:125px}
+ .logo-image{width:145px;height:48px}.logo-image img{width:145px}
  .plain-grid{grid-template-columns:1fr}.plain-visual{aspect-ratio:4/5;height:auto}.builder-preview{padding:16px}.preview-stage{height:360px}.preview-kurta{width:48%}.builder-card,.builder-summary{padding:16px}.process-grid{grid-template-columns:1fr}.builder-title h3{font-size:15px}.builder-title em{display:block;margin:4px 0 0}.footer-logo{width:160px}
 }
 
