@@ -4,8 +4,20 @@ import { ChangeEvent, useState } from "react";
 import { ArrowRight, Check, Instagram, Menu, MessageCircle, ShoppingBag, X } from "lucide-react";
 
 const colours = [
-  ["White","#f5f2ea"],["Maroon","#7b2028"],["Mustard","#c99a21"],["Navy Blue","#173b5b"],
-  ["Olive Green","#526044"],["Sky Blue","#8db8ca"],["Peach","#e8b49d"],["Lavender","#b9a9cf"],["Black","#222222"]
+  ["White","#f5f2ea"],
+  ["Red","#b51f2a"],
+  ["Baby Pink","#f3b6c5"],
+  ["Dark Pink","#c94f78"],
+  ["Sky Blue","#8db8ca"],
+  ["Navy Blue","#173b5b"],
+  ["Yellow","#e5c43d"],
+  ["Mustard","#c99a21"],
+  ["Orange","#e67e22"],
+  ["Grey","#8a8a8a"],
+  ["Black","#222222"],
+  ["Olive Green","#526044"],
+  ["Lavender","#b9a9cf"],
+  ["Purple","#70458f"]
 ];
 const kurtaCatalogImage = "/kurta-sprite.webp";
 const sizes = ["S","M","L","XL","XXL"];
