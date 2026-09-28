@@ -64,7 +64,7 @@ export default function Home() {
   }
   function addToCart(){if(ready){setAdded(true);setCartOpen(true);}}
   async function placeOrderOnWhatsApp(){
-    if(!customerName.trim() || !/^\d{10}$/.test(customerPhone) || !shippingAddress.trim() || !shippingCity.trim() || !shippingState.trim() || !/^\d{6}$/.test(shippingPincode)){
+    if(!kurtaSize){ window.alert("Please select a kurta size (S, M, L, XL or XXL)."); return; }\n    if(!customerName.trim() || !/^\d{10}$/.test(customerPhone) || !shippingAddress.trim() || !shippingCity.trim() || !shippingState.trim() || !/^\d{6}$/.test(shippingPincode)){
       window.alert("Please complete your name, 10-digit mobile number and full delivery address.");
       return;
     }
