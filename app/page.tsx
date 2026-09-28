@@ -1,129 +1,174 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowRight, Check, Instagram, Menu, MessageCircle, Search, ShoppingBag, X } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Instagram, Menu, MessageCircle, Search, ShoppingBag, X } from "lucide-react";
 
-type Product = {
-  name: string;
-  type: "Plain" | "Patch Work" | "DTF Print" | "Print + Patch";
-  colour: string;
-  tone: string;
-};
-
-const collections = [
-  { name: "Plain Kurtas", desc: "Clean, versatile bases for your style.", type: "Plain" },
-  { name: "Patch Work", desc: "Mirror work, embroidery & festive details.", type: "Patch Work" },
-  { name: "DTF Prints", desc: "Bold, premium custom printed designs.", type: "DTF Print" },
-  { name: "Print + Patch", desc: "Mix print and traditional patch work.", type: "Print + Patch" }
-] as const;
-
-const products: Product[] = [
-  { name: "Classic Ivory Kurta", type: "Plain", colour: "Ivory", tone: "#eee0c8" },
-  { name: "Emerald Leaf Kurta", type: "DTF Print", colour: "Peacock Green", tone: "#174d46" },
-  { name: "Mustard Mirror Kurta", type: "Patch Work", colour: "Mustard", tone: "#c99524" },
-  { name: "Navy Heritage Kurta", type: "Print + Patch", colour: "Navy", tone: "#173b5b" },
-  { name: "Maroon Floral Kurta", type: "DTF Print", colour: "Maroon", tone: "#7a252d" },
-  { name: "Forest Mirror Kurta", type: "Patch Work", colour: "Green", tone: "#315849" },
-  { name: "Sandstone Kurta", type: "Plain", colour: "Sand", tone: "#cbb493" },
-  { name: "Royal Blue Fusion", type: "Print + Patch", colour: "Royal Blue", tone: "#2e4f78" }
+const colours = [
+  ["White","#f5f2ea"],["Maroon","#7b2028"],["Mustard","#c99a21"],
+  ["Navy Blue","#173b5b"],["Olive Green","#526044"],["Sky Blue","#8db8ca"],
+  ["Peach","#e8b49d"],["Lavender","#b9a9cf"],["Black","#222222"]
 ];
+
+const categories = ["All","Plain","Patch Work","DTF Print","Print + Patch"];
+
+const products = [
+  ["Classic Plain Kurta","Plain","White","#f5f2ea"],
+  ["Classic Plain Kurta","Plain","Maroon","#7b2028"],
+  ["Classic Plain Kurta","Plain","Mustard","#c99a21"],
+  ["Classic Plain Kurta","Plain","Navy Blue","#173b5b"],
+  ["Classic Plain Kurta","Plain","Olive Green","#526044"],
+  ["Classic Plain Kurta","Plain","Sky Blue","#8db8ca"],
+  ["Classic Plain Kurta","Plain","Peach","#e8b49d"],
+  ["Classic Plain Kurta","Plain","Lavender","#b9a9cf"],
+  ["Classic Plain Kurta","Plain","Black","#222222"]
+];
+
+const optionSizes = ["Small","Medium","Large"];
+const positions = ["Front","Back"];
 
 export default function Home() {
   const [category, setCategory] = useState("All");
   const [search, setSearch] = useState("");
+  const [selectedColour, setSelectedColour] = useState("White");
+  const [selectedTone, setSelectedTone] = useState("#f5f2ea");
+  const [patchSize, setPatchSize] = useState("");
+  const [patchPosition, setPatchPosition] = useState("");
+  const [printSize, setPrintSize] = useState("");
+  const [printPosition, setPrintPosition] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const filtered = useMemo(() => products.filter((p) => {
-    const categoryMatch = category === "All" || p.type === category;
-    const searchMatch = (p.name + " " + p.type + " " + p.colour).toLowerCase().includes(search.toLowerCase());
+    const categoryMatch = category === "All" || p[1] === category;
+    const searchMatch = (p[0] + " " + p[2]).toLowerCase().includes(search.toLowerCase());
     return categoryMatch && searchMatch;
   }), [category, search]);
 
-  const addToCart = () => setCartCount((n) => n + 1);
+  const plainAdded = cartCount > 0;
+  const configurationReady = plainAdded && (!patchSize || patchPosition) && (!printSize || printPosition);
+
+  function addPlain(colour = selectedColour, tone = selectedTone) {
+    setSelectedColour(colour);
+    setSelectedTone(tone);
+    setCartCount(1);
+    document.getElementById("customise")?.scrollIntoView({behavior:"smooth"});
+  }
+
+  function addConfiguration() {
+    if (!configurationReady) return;
+    setCartCount(1);
+    setCartOpen(true);
+  }
 
   return (
     <>
       <header className="nav">
         <div className="container nav-inner">
-          <a className="logo" href="#" onClick={() => setMenuOpen(false)}>
-            <span className="logo-mark">HC</span><span>HINGLAJ<small>Creation</small></span>
-          </a>
+          <a className="logo-image" href="#"><img src="/hinglaj-logo.svg" alt="Hinglaj Creation"/></a>
           <nav className={"nav-links " + (menuOpen ? "nav-links-open" : "")}>
             <a href="#shop" onClick={() => setMenuOpen(false)}>Shop</a>
-            <a href="#collections" onClick={() => setMenuOpen(false)}>Collections</a>
-            <a href="#custom" onClick={() => setMenuOpen(false)}>Custom Design</a>
+            <a href="#customise" onClick={() => setMenuOpen(false)}>Customise</a>
+            <a href="#how" onClick={() => setMenuOpen(false)}>How It Works</a>
             <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
           </nav>
           <div className="nav-actions">
-            <div className="search-wrap"><Search size={17}/><input aria-label="Search products" placeholder="Search kurtas" value={search} onChange={(e) => setSearch(e.target.value)} /></div>
-            <button className="icon-btn mobile-menu-btn" aria-label="Menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={18}/> : <Menu size={18}/>}</button>
-            <button className="icon-btn" aria-label="Shopping bag" onClick={() => setCartOpen(true)}><ShoppingBag size={18}/>{cartCount > 0 && <span className="cart-badge">{cartCount}</span>}</button>
+            <div className="search-wrap"><Search size={17}/><input placeholder="Search colours" value={search} onChange={(e) => setSearch(e.target.value)} /></div>
+            <button className="icon-btn mobile-menu-btn" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">{menuOpen ? <X size={18}/> : <Menu size={18}/>}</button>
+            <button className="icon-btn" onClick={() => setCartOpen(true)} aria-label="Shopping bag"><ShoppingBag size={18}/>{cartCount > 0 && <span className="cart-badge">{cartCount}</span>}</button>
           </div>
         </div>
       </header>
 
       <main>
-        <section className="hero"><div className="container"><div className="hero-grid">
+        <section className="hero hero-custom"><div className="container"><div className="hero-grid">
           <div className="hero-copy">
-            <span className="eyebrow">Navratri Collection 2026</span>
-            <h1>Your Style.<br/>Your Kurta.</h1>
-            <p>Traditional roots, modern style. Discover men's kurtas with DTF prints, handcrafted patch work and custom combinations made for your festive look.</p>
-            <div className="btn-row"><a className="btn btn-gold" href="#shop">Shop Collection <ArrowRight size={17}/></a><a className="btn btn-light" href="#custom">Create Custom Kurta</a></div>
-            <div className="trust-row"><span><Check size={15}/> Sizes S–XXL</span><span><Check size={15}/> Customisation</span><span><Check size={15}/> Men's Kurtas</span></div>
+            <span className="eyebrow">Hinglaj Custom Studio</span>
+            <h1>Start with a<br/>plain kurta.</h1>
+            <p>Choose your base colour, then build your own look with a patch, a DTF print, or both. You decide the size and placement.</p>
+            <div className="btn-row"><a className="btn btn-gold" href="#shop">Choose Your Kurta <ArrowRight size={17}/></a><a className="btn btn-light" href="#how">How it works</a></div>
+            <div className="trust-row"><span><Check size={15}/> Custom made</span><span><Check size={15}/> Sizes S–XXL</span><span><Check size={15}/> Front / Back</span></div>
           </div>
-          <div className="hero-art"><div className="hero-badge">HINGLAJ<br/><span>CREATION</span></div><div className="kurta-silhouette"/><div className="hero-caption">PRINT · PATCH · CUSTOM</div></div>
+          <div className="hero-art"><div className="hero-badge">CUSTOM<br/><span>YOUR WAY</span></div><div className="kurta-silhouette"/><div className="hero-caption">PLAIN · PATCH · PRINT</div></div>
         </div></div></section>
 
-        <section className="section" id="collections"><div className="container">
-          <div className="section-head"><div><span className="eyebrow">Explore</span><h2>Find Your Style</h2></div><p>Choose a ready style or combine colours, prints and patches to create something uniquely yours.</p></div>
-          <div className="collections">
-            {collections.map((c, index) => <button className="collection collection-btn" key={c.name} onClick={() => { setCategory(c.type); document.getElementById("shop")?.scrollIntoView({behavior:"smooth"}); }}>
-              <div><span className="collection-no">0{index + 1}</span><h3>{c.name}</h3><p>{c.desc}</p><span className="collection-link">Shop now <ArrowRight size={15}/></span></div>
-            </button>)}
-          </div>
-        </div></section>
-
         <section className="section shop-section" id="shop"><div className="container">
-          <div className="section-head shop-head"><div><span className="eyebrow">The Collection</span><h2>Shop Kurtas</h2></div>
-            <div className="shop-controls">{["All","Plain","Patch Work","DTF Print","Print + Patch"].map((item) =>
-              <button key={item} className={"filter " + (category === item ? "filter-active" : "")} onClick={() => setCategory(item)}>{item}</button>
-            )}</div>
+          <div className="section-head shop-head">
+            <div><span className="eyebrow">Step 01</span><h2>Choose Your Plain Kurta</h2><p>Pick your base colour. If you want it plain, simply add it to cart. You can also customise it below.</p></div>
           </div>
-          <div className="products">
-            {filtered.map((p) => <article className="product-card" key={p.name}>
-              <button className="product-img" style={{"--pc":p.tone} as React.CSSProperties} onClick={addToCart} aria-label={"Add " + p.name + " to cart"}>
-                <span className="tag">{p.type}</span><span className="product-kurta"/><span className="quick-add">Add to bag</span>
+          <div className="shop-controls shop-controls-wide">
+            {categories.map((item) => <button key={item} className={"filter " + (category === item ? "filter-active" : "")} onClick={() => setCategory(item)}>{item}</button>)}
+          </div>
+          <div className="plain-grid">
+            {filtered.map((p, i) => <article className={"plain-card " + (selectedColour === p[2] ? "plain-selected" : "")} key={p[2]}>
+              <button className="plain-visual" style={{"--pc":p[3]} as React.CSSProperties} onClick={() => {setSelectedColour(p[2]);setSelectedTone(p[3]);}} aria-label={"Select " + p[2] + " kurta"}>
+                <span className="product-kurta"/>
               </button>
-              <div className="product-body"><div className="product-type">{p.colour}</div><h3>{p.name}</h3><div className="meta">Sizes S–XXL · Customisation available</div>
-                <div className="product-bottom"><span className="price">Custom Quote</span><button className="mini-add" onClick={addToCart}>+</button></div>
+              <div className="plain-body"><div className="product-type">{p[2]}</div><h3>{p[0]}</h3><div className="meta">Sizes S–XXL · Plain base</div>
+                <button className="btn btn-dark full-btn" onClick={() => addPlain(p[2],p[3])}>Add to Cart <ShoppingBag size={16}/></button>
               </div>
             </article>)}
           </div>
-          {filtered.length === 0 && <div className="empty-state">No kurtas found. Try another search or category.</div>}
         </div></section>
 
-        <section className="section"><div className="container"><div className="custom" id="custom">
-          <div><span className="eyebrow">Made Your Way</span><h2>Create Your Own Custom Style</h2><p>Choose your kurta colour, add DTF prints, pick patch work and mix elements to build a festive look that feels like you.</p>
-            <a className="btn btn-gold" href="https://wa.me/917405652991" target="_blank">Start on WhatsApp <MessageCircle size={17}/></a>
-          </div>
-          <div className="steps"><div className="step"><b>01 · Choose your colour</b><span>Pick from the available kurta colours.</span></div><div className="step"><b>02 · Add DTF prints</b><span>Select a print style and placement.</span></div><div className="step"><b>03 · Pick patch work</b><span>Choose mirror work and festive patches.</span></div><div className="step"><b>04 · Mix & match</b><span>Combine the details for your own design.</span></div></div>
-        </div></div></section>
+        <section className="section customise-section" id="customise"><div className="container">
+          <div className="section-head"><div><span className="eyebrow">Step 02</span><h2>Build Your Custom Kurta</h2><p>Base: <strong>{selectedColour}</strong> plain kurta. Add a patch, a print, or both.</p></div></div>
+          <div className="builder">
+            <aside className="builder-preview">
+              <div className="preview-label">YOUR KURTA</div>
+              <div className="preview-stage"><div className="preview-kurta" style={{"--pc":selectedTone} as React.CSSProperties}>
+                {patchSize && <span className={"preview-detail patch-detail " + patchSize.toLowerCase() + " " + patchPosition.toLowerCase()}>PATCH</span>}
+                {printSize && <span className={"preview-detail print-detail " + printSize.toLowerCase() + " " + printPosition.toLowerCase()}>PRINT</span>}
+              </div></div>
+              <div className="preview-colour"><span className="colour-dot" style={{background:selectedTone}}/> {selectedColour}</div>
+            </aside>
 
-        <section className="section feature-strip"><div className="container feature-grid"><div><strong>01</strong><span>Festive-ready designs</span></div><div><strong>02</strong><span>Custom print & patch</span></div><div><strong>03</strong><span>Sizes S to XXL</span></div><div><strong>04</strong><span>Order on WhatsApp</span></div></div></section>
+            <div className="builder-options">
+              <div className="builder-card"><div className="builder-title"><span>1</span><div><h3>Plain Kurta</h3><p>Selected base colour</p></div></div><div className="selected-pill"><Check size={15}/> {selectedColour}</div></div>
+
+              <div className="builder-card">
+                <div className="builder-title"><span>2</span><div><h3>Add Patch Work <em>Optional</em></h3><p>Choose patch size and placement.</p></div></div>
+                <div className="option-label">Patch size</div>
+                <div className="option-grid">{optionSizes.map(s => <button key={s} className={"choice " + (patchSize === s ? "choice-active" : "")} onClick={() => setPatchSize(patchSize === s ? "" : s)}>{s}</button>)}</div>
+                {patchSize && <><div className="option-label">Patch placement</div><div className="option-grid two">{positions.map(s => <button key={s} className={"choice " + (patchPosition === s ? "choice-active" : "")} onClick={() => setPatchPosition(s)}>{s}</button>)}</div></>}
+              </div>
+
+              <div className="builder-card">
+                <div className="builder-title"><span>3</span><div><h3>Add DTF Print <em>Optional</em></h3><p>Choose print size and placement.</p></div></div>
+                <div className="option-label">Print size</div>
+                <div className="option-grid">{optionSizes.map(s => <button key={s} className={"choice " + (printSize === s ? "choice-active" : "")} onClick={() => setPrintSize(printSize === s ? "" : s)}>{s}</button>)}</div>
+                {printSize && <><div className="option-label">Print placement</div><div className="option-grid two">{positions.map(s => <button key={s} className={"choice " + (printPosition === s ? "choice-active" : "")} onClick={() => setPrintPosition(s)}>{s}</button>)}</div></>}
+              </div>
+
+              <div className="builder-summary">
+                <div><span>Base</span><b>{selectedColour} plain kurta</b></div>
+                <div><span>Patch</span><b>{patchSize ? patchSize + " · " + patchPosition : "None"}</b></div>
+                <div><span>Print</span><b>{printSize ? printSize + " · " + printPosition : "None"}</b></div>
+                <button className="btn btn-gold full-btn" disabled={!configurationReady} onClick={addConfiguration}>{configurationReady ? "Add Custom Kurta to Cart" : "Select a placement to continue"} <ShoppingBag size={17}/></button>
+              </div>
+            </div>
+          </div>
+        </div></section>
+
+        <section className="section how-section" id="how"><div className="container">
+          <div className="section-head"><div><span className="eyebrow">Simple Process</span><h2>Build It Your Way</h2></div></div>
+          <div className="process-grid"><div><strong>01</strong><h3>Choose the plain base</h3><p>Select your favourite colour from the nine options.</p></div><div><strong>02</strong><h3>Add patch work</h3><p>Pick Small, Medium or Large and Front or Back.</p></div><div><strong>03</strong><h3>Add DTF print</h3><p>Pick Small, Medium or Large and Front or Back.</p></div><div><strong>04</strong><h3>Order your design</h3><p>Review your combination and continue to cart.</p></div></div>
+        </div></section>
       </main>
 
       <footer className="footer" id="contact"><div className="container footer-grid">
-        <div><div className="logo"><span className="logo-mark">HC</span><span>HINGLAJ<small>Creation</small></span></div><p>Custom men's kurtas for Navratri and festive occasions. Traditional roots, modern style.</p></div>
-        <div><b>Collections</b><p>Plain Kurtas<br/>Patch Work<br/>DTF Prints<br/>Print + Patch</p></div>
+        <div><img className="footer-logo" src="/hinglaj-logo.svg" alt="Hinglaj Creation"/><p>Custom men's kurtas. Start with a plain kurta and build your own print and patch combination.</p></div>
+        <div><b>Customise</b><p>Plain Kurta<br/>Patch Work<br/>DTF Print<br/>Front / Back</p></div>
         <div><b>Connect</b><p>WhatsApp: 7405652991<br/>Instagram: @hinglaj.creation.store</p><div className="btn-row"><a className="btn btn-gold" href="https://wa.me/917405652991" target="_blank"><MessageCircle size={16}/> WhatsApp</a><a className="btn btn-light" href="https://instagram.com/hinglaj.creation.store" target="_blank"><Instagram size={16}/> Instagram</a></div></div>
       </div></footer>
 
       {cartOpen && <div className="drawer-backdrop" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(e) => e.stopPropagation()}>
-        <div className="drawer-head"><h3>Your Bag</h3><button className="icon-btn" onClick={() => setCartOpen(false)}><X size={18}/></button></div>
-        {cartCount === 0 ? <div className="cart-empty"><ShoppingBag size={38}/><h3>Your bag is empty</h3><p>Add a kurta to start building your order.</p><button className="btn btn-gold" onClick={() => setCartOpen(false)}>Continue Shopping</button></div> :
-          <div className="cart-content"><div className="cart-item"><span className="cart-thumb"/><div><b>Selected Kurta</b><p>Custom quote · Size to be confirmed</p><button onClick={() => setCartCount(0)}>Remove</button></div></div><a className="btn btn-gold cart-wa" href="https://wa.me/917405652991?text=Hi%20Hinglaj%20Creation,%20I%20want%20to%20order%20a%20kurta." target="_blank">Continue on WhatsApp <MessageCircle size={17}/></a></div>}
+        <div className="drawer-head"><h3>Your Custom Order</h3><button className="icon-btn" onClick={() => setCartOpen(false)}><X size={18}/></button></div>
+        {cartCount === 0 ? <div className="cart-empty"><ShoppingBag size={38}/><h3>Your bag is empty</h3><p>Choose a plain kurta to begin.</p><button className="btn btn-gold" onClick={() => setCartOpen(false)}>Choose Kurta</button></div> :
+          <div className="cart-content">
+            <div className="cart-item"><span className="cart-thumb" style={{background:"linear-gradient(145deg," + selectedTone + ",#d4af37)"}}/><div><b>{selectedColour} Plain Kurta</b><p>Patch: {patchSize ? patchSize + " · " + patchPosition : "None"}<br/>Print: {printSize ? printSize + " · " + printPosition : "None"}</p></div></div>
+            <a className="btn btn-gold cart-wa" href={"https://wa.me/917405652991?text=" + encodeURIComponent("Hi Hinglaj Creation, I want this custom kurta: " + selectedColour + " plain kurta. Patch: " + (patchSize ? patchSize + " " + patchPosition : "None") + ". Print: " + (printSize ? printSize + " " + printPosition : "None") + ".")} target="_blank">Continue on WhatsApp <MessageCircle size={17}/></a>
+          </div>}
       </aside></div>}
     </>
   );
