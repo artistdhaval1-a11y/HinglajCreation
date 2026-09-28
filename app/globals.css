@@ -205,3 +205,18 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 .checkout-lines{margin-top:18px;display:grid;gap:11px}
 .checkout-lines>div:not(.total-row){display:flex;justify-content:space-between;font-size:13px}
 .cart-wa{width:100%;margin-top:20px}
+
+/* Custom preview placement: patch sits on left chest; print covers the kurta body */
+.preview-detail.left-chest,
+.uploaded-art.left-chest{left:34%!important;top:27%!important;transform:none!important}
+.preview-detail.back,
+.uploaded-art.back{left:50%!important;top:48%!important;transform:translateX(-50%)!important}
+.patch-art.left-chest{object-fit:contain}
+.print-art{left:50%!important;transform:translateX(-50%)!important;top:14%!important;width:auto!important;height:auto!important;max-width:76%!important;max-height:70%!important;border-radius:0!important;box-shadow:none!important;mix-blend-mode:normal}
+.print-art.small{width:38%!important;height:35%!important}
+.print-art.medium{width:52%!important;height:50%!important}
+.print-art.large{width:68%!important;height:68%!important}
+.print-detail{left:50%!important;transform:translateX(-50%)!important;top:14%!important;border-radius:2px!important}
+.print-detail.small{width:38%!important;height:35%!important}
+.print-detail.medium{width:52%!important;height:50%!important}
+.print-detail.large{width:68%!important;height:68%!important}
