@@ -103,7 +103,7 @@ export default function Home() {
       <section className="section customise-section" id="customise"><div className="container">
         <div className="section-head"><div><span className="eyebrow">Step 02</span><h2>Customize Your Kurta</h2><p>Base: <strong>{selectedColour}</strong> · Plain kurta ₹225</p></div></div>
         <div className="builder">
-          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo" style={{backgroundImage:"url("+kurtaCatalogImage+")"}}>
+          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo" style={{backgroundImage:"url("+kurtaCatalogImage+")","--preview-tone":selectedTone} as React.CSSProperties}>
             {patchImage&&patchFront&&<img className={"uploaded-art patch-art "+patchSize?.toLowerCase()+" left-chest"} src={patchImage} alt="Uploaded front patch preview"/>}
             {patchImage&&patchBack&&<img className="uploaded-art patch-art large back" src={patchImage} alt="Uploaded back patch preview"/>}
             {!patchImage&&patchFront&&patchSize&&<span className={"preview-detail patch-detail "+patchSize.toLowerCase()+" left-chest"}>PATCH</span>}
