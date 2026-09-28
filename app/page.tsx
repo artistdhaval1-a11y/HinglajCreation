@@ -105,7 +105,7 @@ export default function Home() {
       <section className="section customise-section" id="customise"><div className="container">
         <div className="section-head"><div><span className="eyebrow">Step 02</span><h2>Customize Your Kurta</h2><p>Base: <strong>{selectedColour}</strong> · Plain kurta ₹225</p></div></div>
         <div className="builder">
-          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo" style={{backgroundImage:"url("+kurtaCatalogImage+")",backgroundSize:"500% 300%",...selectedSpritePosition} as React.CSSProperties}></div></div></div><div className="preview-colour"><span className="colour-dot" style={{background:selectedTone}}/> {selectedColour} · Size {kurtaSize||"—"}</div></aside>
+          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo" style={{backgroundImage:"url("+kurtaCatalogImage+")",backgroundSize:"500% 300%",...selectedSpritePosition} as React.CSSProperties}></div></div><div className="preview-colour"><span className="colour-dot" style={{background:selectedTone}}/> {selectedColour} · Size {kurtaSize||"—"}</div></aside>
 
           <div className="builder-options">
             <div className="builder-card"><div className="builder-title"><span>1</span><div><h3>Kurta Size</h3><p>Choose your fitting size.</p></div></div><div className="option-grid kurta-size-grid">{sizes.map(s=><button key={s} className={"choice "+(kurtaSize===s?"choice-active":"")} onClick={()=>setKurtaSize(s)}>{s}</button>)}</div></div>
