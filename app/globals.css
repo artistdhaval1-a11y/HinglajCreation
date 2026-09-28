@@ -108,7 +108,7 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 .feature-grid strong{font-family:"Playfair Display",serif;font-size:25px;color:var(--gold)}
 .feature-grid span{font-size:12px;font-weight:700}
 .drawer-backdrop{position:fixed;inset:0;background:rgba(17,31,28,.45);z-index:100;display:flex;justify-content:flex-end}
-.cart-drawer{width:min(430px,100%);height:100%;background:var(--paper);padding:24px;box-shadow:-20px 0 60px rgba(0,0,0,.15);animation:drawerIn .2s ease}
+.cart-drawer{width:min(430px,100%);height:100%;max-height:100dvh;overflow-y:auto;background:var(--paper);padding:24px;box-shadow:-20px 0 60px rgba(0,0,0,.15);animation:drawerIn .2s ease}
 @keyframes drawerIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
 .drawer-head{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:18px}
 .drawer-head h3{font-size:28px}
@@ -370,3 +370,8 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 .checkout-product-info b{font-size:15px}
 .checkout-product-info p{font-size:12px;color:var(--muted);line-height:1.55;margin:6px 0 0}
 @media(max-width:560px){.checkout-product-card{grid-template-columns:110px 1fr;gap:12px}.checkout-product-photo{width:110px;height:145px}}
+
+
+/* Keep checkout totals reachable on mobile */
+.cart-drawer{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.checkout-lines{padding-bottom:8px}
