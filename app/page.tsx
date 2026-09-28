@@ -87,7 +87,7 @@ export default function Home() {
     <main>
       <section className="hero hero-custom"><div className="container"><div className="hero-grid">
         <div className="hero-copy"><span className="eyebrow">Hinglaj Custom Studio</span><h1>Start with a<br/>plain kurta.</h1><p>Choose your base colour and size, then add your own patch, DTF print, or both. Upload your artwork and preview it on the kurta.</p><div className="btn-row"><a className="btn btn-gold" href="#shop">Choose Your Kurta <ArrowRight size={17}/></a><a className="btn btn-light" href="#how">How it works</a></div><div className="trust-row"><span><Check size={15}/> ₹225 plain kurta</span><span><Check size={15}/> Custom uploads</span><span><Check size={15}/> S–XXL</span></div></div>
-        <div className="hero-art"><div className="hero-badge">CUSTOM<br/><span>YOUR WAY</span></div><div className="kurta-silhouette"/><div className="hero-caption">PLAIN · PATCH · PRINT</div></div>
+        <div className="hero-art"><img className="hero-photo" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3GaPnt7FT0FsavzgVsFIQBb4kgI/272c73e9-cad2-4a4d-88d7-64d64e4f5698.png" alt="Hinglaj Creation custom kurta collection"/><div className="hero-badge">CUSTOM<br/><span>YOUR WAY</span></div><div className="hero-caption">PLAIN · PATCH · PRINT</div></div>
       </div></div></section>
 
       <section className="section shop-section" id="shop"><div className="container">
