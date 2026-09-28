@@ -25,12 +25,14 @@ const products = [
 
 const optionSizes = ["Small","Medium","Large"];
 const positions = ["Front","Back"];
+const kurtaSizes = ["S","M","L","XL","XXL"];
 
 export default function Home() {
   const [category, setCategory] = useState("All");
   const [search, setSearch] = useState("");
   const [selectedColour, setSelectedColour] = useState("White");
   const [selectedTone, setSelectedTone] = useState("#f5f2ea");
+  const [kurtaSize, setKurtaSize] = useState("");
   const [patchSize, setPatchSize] = useState("");
   const [patchPosition, setPatchPosition] = useState("");
   const [printSize, setPrintSize] = useState("");
@@ -46,7 +48,7 @@ export default function Home() {
   }), [category, search]);
 
   const plainAdded = cartCount > 0;
-  const configurationReady = plainAdded && (!patchSize || patchPosition) && (!printSize || printPosition);
+  const configurationReady = plainAdded && !!kurtaSize && (!patchSize || patchPosition) && (!printSize || printPosition);
 
   function addPlain(colour = selectedColour, tone = selectedTone) {
     setSelectedColour(colour);
@@ -124,7 +126,7 @@ export default function Home() {
             </aside>
 
             <div className="builder-options">
-              <div className="builder-card"><div className="builder-title"><span>1</span><div><h3>Plain Kurta</h3><p>Selected base colour</p></div></div><div className="selected-pill"><Check size={15}/> {selectedColour}</div></div>
+              <div className="builder-card"><div className="builder-title"><span>1</span><div><h3>Plain Kurta</h3><p>Selected base colour and size</p></div></div><div className="selected-pill"><Check size={15}/> {selectedColour}</div><div className="option-label">Kurta size</div><div className="option-grid kurta-size-grid">{kurtaSizes.map(s => <button key={s} className={"choice " + (kurtaSize === s ? "choice-active" : "")} onClick={() => setKurtaSize(s)}>{s}</button>)}</div></div>
 
               <div className="builder-card">
                 <div className="builder-title"><span>2</span><div><h3>Add Patch Work <em>Optional</em></h3><p>Choose patch size and placement.</p></div></div>
@@ -141,7 +143,7 @@ export default function Home() {
               </div>
 
               <div className="builder-summary">
-                <div><span>Base</span><b>{selectedColour} plain kurta</b></div>
+                <div><span>Base</span><b>{selectedColour} · Size {kurtaSize || "Not selected"}</b></div>
                 <div><span>Patch</span><b>{patchSize ? patchSize + " · " + patchPosition : "None"}</b></div>
                 <div><span>Print</span><b>{printSize ? printSize + " · " + printPosition : "None"}</b></div>
                 <button className="btn btn-gold full-btn" disabled={!configurationReady} onClick={addConfiguration}>{configurationReady ? "Add Custom Kurta to Cart" : "Select a placement to continue"} <ShoppingBag size={17}/></button>
@@ -166,8 +168,8 @@ export default function Home() {
         <div className="drawer-head"><h3>Your Custom Order</h3><button className="icon-btn" onClick={() => setCartOpen(false)}><X size={18}/></button></div>
         {cartCount === 0 ? <div className="cart-empty"><ShoppingBag size={38}/><h3>Your bag is empty</h3><p>Choose a plain kurta to begin.</p><button className="btn btn-gold" onClick={() => setCartOpen(false)}>Choose Kurta</button></div> :
           <div className="cart-content">
-            <div className="cart-item"><span className="cart-thumb" style={{background:"linear-gradient(145deg," + selectedTone + ",#d4af37)"}}/><div><b>{selectedColour} Plain Kurta</b><p>Patch: {patchSize ? patchSize + " · " + patchPosition : "None"}<br/>Print: {printSize ? printSize + " · " + printPosition : "None"}</p></div></div>
-            <a className="btn btn-gold cart-wa" href={"https://wa.me/917405652991?text=" + encodeURIComponent("Hi Hinglaj Creation, I want this custom kurta: " + selectedColour + " plain kurta. Patch: " + (patchSize ? patchSize + " " + patchPosition : "None") + ". Print: " + (printSize ? printSize + " " + printPosition : "None") + ".")} target="_blank">Continue on WhatsApp <MessageCircle size={17}/></a>
+            <div className="cart-item"><span className="cart-thumb" style={{background:"linear-gradient(145deg," + selectedTone + ",#d4af37)"}}/><div><b>{selectedColour} Plain Kurta</b><p>Size: {kurtaSize || "Not selected"}<br/>Patch: {patchSize ? patchSize + " · " + patchPosition : "None"}<br/>Print: {printSize ? printSize + " · " + printPosition : "None"}</p></div></div>
+            <a className="btn btn-gold cart-wa" href={"https://wa.me/917405652991?text=" + encodeURIComponent("Hi Hinglaj Creation, I want this custom kurta: " + selectedColour + " plain kurta, size " + kurtaSize + ". Patch: " + (patchSize ? patchSize + " " + patchPosition : "None") + ". Print: " + (printSize ? printSize + " " + printPosition : "None") + ".")} target="_blank">Continue on WhatsApp <MessageCircle size={17}/></a>
           </div>}
       </aside></div>}
     </>
