@@ -65,7 +65,7 @@ export default function Home() {
     }
     window.open("https://wa.me/917405652991?text="+encodeURIComponent(text), "_blank");
   }
-  const orderText="Hi Hinglaj Creation, I want to order a custom kurta. Colour: "+selectedColour+"; Size: "+kurtaSize+"; Base: ₹225; Patch: "+(patchPrice?((patchFront?patchSize+" Front (Left Chest)":"")+(patchFront&&patchBack?" + ":"")+(patchBack?"Large Back Center":"")+" / ₹"+patchPrice):"None")+"+"; Print: "+(printSize?printSize+" / "+printPosition+" / ₹"+printPrice:"None")+"; Total: ₹"+total;
+  const orderText = "Hi Hinglaj Creation, I want to order a custom kurta. Colour: "+selectedColour+"; Size: "+kurtaSize+"; Base: ₹225; Patch: "+(patchPrice ? ((patchFront ? patchSize+" Front (Left Chest)" : "") + (patchFront&&patchBack ? " + " : "") + (patchBack ? "Large Back Center" : "") + " / ₹"+patchPrice) : "None")+"; Print: "+(printSize ? printSize+" / "+printPosition+" / ₹"+printPrice : "None")+"; Total: ₹"+total;
 
   return <>
     <header className="nav"><div className="container nav-inner">
@@ -92,8 +92,10 @@ export default function Home() {
         <div className="section-head"><div><span className="eyebrow">Step 02</span><h2>Customize Your Kurta</h2><p>Base: <strong>{selectedColour}</strong> · Plain kurta ₹225</p></div></div>
         <div className="builder">
           <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-kurta" style={{"--pc":selectedTone} as React.CSSProperties}>
-            {patchImage&&<img className={"uploaded-art patch-art "+patchSize?.toLowerCase()+" "+patchPosition?.toLowerCase().replace(" ","-")} src={patchImage} alt="Uploaded patch preview"/>}
-            {!patchImage&&patchSize&&<span className={"preview-detail patch-detail "+patchSize.toLowerCase()+" "+patchPosition?.toLowerCase().replace(" ","-")}>PATCH</span>}
+            {patchImage&&patchFront&&<img className={"uploaded-art patch-art "+patchSize?.toLowerCase()+" left-chest"} src={patchImage} alt="Uploaded front patch preview"/>}
+            {patchImage&&patchBack&&<img className="uploaded-art patch-art large back" src={patchImage} alt="Uploaded back patch preview"/>}
+            {!patchImage&&patchFront&&patchSize&&<span className={"preview-detail patch-detail "+patchSize.toLowerCase()+" left-chest"}>PATCH</span>}
+            {!patchImage&&patchBack&&<span className="preview-detail patch-detail large back">PATCH</span>}
             {printImage&&<img className={"uploaded-art print-art "+printSize?.toLowerCase()+" "+printPosition?.toLowerCase().replace(" ","-")} src={printImage} alt="Uploaded print preview"/>}
             {!printImage&&printSize&&<span className={"preview-detail print-detail "+printSize.toLowerCase()+" "+printPosition?.toLowerCase().replace(" ","-")}>PRINT</span>}
           </div></div><div className="preview-colour"><span className="colour-dot" style={{background:selectedTone}}/> {selectedColour} · Size {kurtaSize||"—"}</div></aside>
