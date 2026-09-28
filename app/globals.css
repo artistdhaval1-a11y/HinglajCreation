@@ -347,3 +347,18 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 .hero-art .hero-caption{z-index:4;background:rgba(251,244,231,.72);padding:7px 12px;border-radius:999px;backdrop-filter:blur(3px)}
 @media(max-width:900px){.hero-photo{min-height:440px}.hero-art{min-height:440px}}
 @media(max-width:560px){.hero-photo{min-height:380px}.hero-art{min-height:380px}.hero-art:after{display:none}.hero-art .hero-badge{top:18px;right:18px}.hero-art .hero-caption{bottom:16px}}
+
+
+/* Shiprocket checkout */
+.shipping-form{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:16px;background:#fbf4e7;display:grid;gap:9px}
+.shipping-form-title{font-size:14px;font-weight:800;margin-bottom:2px}
+.shipping-form input,.shipping-form textarea{width:100%;border:1px solid #d8ccb9;background:#fffaf2;color:var(--ink);border-radius:10px;padding:11px 12px;font:inherit;font-size:13px;outline:none}
+.shipping-form input:focus,.shipping-form textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,150,62,.12)}
+.shipping-form textarea{resize:vertical;min-height:76px}
+.shipping-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.shipping-error{margin:0;color:#b42318;font-size:11px;line-height:1.45}
+.shipping-result{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#e9f3eb;border:1px solid #c5dfca;border-radius:12px;padding:11px 12px;color:#174d2b}
+.shipping-result div{display:grid;gap:3px}
+.shipping-result span{font-size:11px;color:#52715a}
+.shipping-form .btn:disabled,.cart-wa:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:560px){.shipping-form-grid{grid-template-columns:1fr}}
