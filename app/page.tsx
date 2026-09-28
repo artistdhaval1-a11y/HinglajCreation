@@ -47,6 +47,7 @@ export default function Home() {
   const [shippingState,setShippingState]=useState("");
   const [shippingPincode,setShippingPincode]=useState("");
   const [added,setAdded]=useState(false);
+  const [orderCreatedId,setOrderCreatedId]=useState("");
   const selectedColourIndex=colours.findIndex(([name])=>name===selectedColour);
   const selectedSpritePosition={backgroundPosition:`${(selectedColourIndex%5)*25}% ${Math.floor(selectedColourIndex/5)*50}%`};
   const patchPrice=(patchFront && patchSize ? patchPrices[patchSize] : 0)+(patchBack ? patchPrices["Large"] : 0);
@@ -63,7 +64,30 @@ export default function Home() {
   }
   function addToCart(){if(ready){setAdded(true);setCartOpen(true);}}
   async function placeOrderOnWhatsApp(){
-    const text = orderText + (patchImage || printImage ? "; Uploaded artwork: attached with this order." : "");
+    if(!customerName.trim() || !/^\\d{10}$/.test(customerPhone) || !shippingAddress.trim() || !shippingCity.trim() || !shippingState.trim() || !/^\\d{6}$/.test(shippingPincode)){
+      window.alert("Please complete your name, 10-digit mobile number and full delivery address.");
+      return;
+    }
+    let savedOrderId=orderCreatedId;
+    if(!savedOrderId){
+      try{
+        const patchDetails=patchPrice ? ((patchFront?patchSize+" Front (Left Chest)":"")+(patchFront&&patchBack?" + ":"")+(patchBack?"Large Back Center":""))+" / ₹"+patchPrice : "None";
+        const printDetails=printSize ? printSize+" / "+(printSize==="Full Print"?"Full Print":printPosition)+" / ₹"+printPrice : "None";
+        const res=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+          customerName,customerPhone,shippingAddress,shippingCity,shippingState,shippingPincode,
+          colour:selectedColour,size:kurtaSize,patchDetails,patchPrice,printDetails,printPrice,total,
+          patchUploaded:!!patchImage,printUploaded:!!printImage
+        })});
+        const data=await res.json();
+        if(!res.ok) throw new Error(data.error||"Could not save order.");
+        savedOrderId=data.orderId;
+        setOrderCreatedId(savedOrderId);
+      }catch(error){
+        window.alert(error instanceof Error?error.message:"Could not save the order. Please try again.");
+        return;
+      }
+    }
+    const text = "Order ID: "+savedOrderId+"; "+orderText + (patchImage || printImage ? "; Uploaded artwork: attached with this order." : "");
     const files: File[] = [];
     async function dataUrlToFile(dataUrl:string, name:string){
       const res = await fetch(dataUrl);
@@ -87,7 +111,7 @@ export default function Home() {
   return <>
     <header className="nav"><div className="container nav-inner">
       <a className="logo-image" href="#"><img src="/hinglaj-logo.svg" alt="Hinglaj Creation"/></a>
-      <nav className={"nav-links "+(menuOpen?"nav-links-open":"")}><a href="#shop" onClick={()=>setMenuOpen(false)}>Shop</a><a href="#customise" onClick={()=>setMenuOpen(false)}>Customise</a><a href="#how" onClick={()=>setMenuOpen(false)}>How It Works</a><a href="#contact" onClick={()=>setMenuOpen(false)}>Contact</a></nav>
+      <nav className={"nav-links "+(menuOpen?"nav-links-open":"")}><a href="#shop" onClick={()=>setMenuOpen(false)}>Shop</a><a href="#customise" onClick={()=>setMenuOpen(false)}>Customise</a><a href="#how" onClick={()=>setMenuOpen(false)}>How It Works</a><a href="/orders" onClick={()=>setMenuOpen(false)}>My Orders</a><a href="#contact" onClick={()=>setMenuOpen(false)}>Contact</a></nav>
       <div className="nav-actions"><button className="icon-btn mobile-menu-btn" onClick={()=>setMenuOpen(!menuOpen)}>{menuOpen?<X size={18}/>:<Menu size={18}/>}</button><button className="icon-btn" onClick={()=>setCartOpen(true)}><ShoppingBag size={18}/>{added&&<span className="cart-badge">1</span>}</button></div>
     </div></header>
 
@@ -152,7 +176,7 @@ export default function Home() {
           <div className="total-row"><span>Final Total</span><b>₹{finalTotal}</b></div>
         </div>
         <button type="button" className="btn btn-gold cart-wa" onClick={placeOrderOnWhatsApp}>Place Order on WhatsApp <MessageCircle size={17}/></button>
-        <p className="whatsapp-note">{(patchImage||printImage)?"Your uploaded patch/print will be attached when your phone/browser supports WhatsApp file sharing.":"Pan-India shipping is included. Your order details will open in WhatsApp."}</p>
+        <p className="whatsapp-note">{orderCreatedId?"Order "+orderCreatedId+" saved. ":""}{(patchImage||printImage)?"Your uploaded patch/print will be attached when your phone/browser supports WhatsApp file sharing.":"Pan-India shipping is included. Your order details will open in WhatsApp."} After placing your order, use <a href="/orders">My Orders</a> to track it.</p>
       </div>
     </aside></div>}
   </>;
