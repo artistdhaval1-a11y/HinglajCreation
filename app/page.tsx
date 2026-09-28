@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { ArrowRight, Check, Instagram, Menu, MessageCircle, ShoppingBag, X } from "lucide-react";
 
 const colours = [
@@ -8,7 +8,6 @@ const colours = [
   ["Olive Green","#526044"],["Sky Blue","#8db8ca"],["Peach","#e8b49d"],["Lavender","#b9a9cf"],["Black","#222222"]
 ];
 const kurtaCatalogImage = "/kurta-sprite.webp";
-const products = colours.map(([name,tone]) => ["Classic Plain Kurta","Plain",name,tone]);
 const sizes = ["S","M","L","XL","XXL"];
 const addOnSizes = ["Small","Medium","Large"];
 const printPositions = ["Front","Back"];
