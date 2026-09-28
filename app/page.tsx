@@ -41,7 +41,8 @@ export default function Home() {
   const [cartOpen,setCartOpen]=useState(false);
   const [menuOpen,setMenuOpen]=useState(false);
   const [added,setAdded]=useState(false);
-  const selectedColourIndex=colours.findIndex(([name])=>name===selectedColour);\n  const selectedSpritePosition={backgroundPosition:`${(selectedColourIndex%5)*25}% ${Math.floor(selectedColourIndex/5)*50}%`};
+  const selectedColourIndex=colours.findIndex(([name])=>name===selectedColour);
+  const selectedSpritePosition={backgroundPosition:`${(selectedColourIndex%5)*25}% ${Math.floor(selectedColourIndex/5)*50}%`};
   const patchPrice=(patchFront && patchSize ? patchPrices[patchSize] : 0)+(patchBack ? patchPrices["Large"] : 0);
   const printPrice=printSize ? printPrices[printSize] : 0;
   const total=225+patchPrice+printPrice;
