@@ -375,3 +375,6 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 /* Keep checkout totals reachable on mobile */
 .cart-drawer{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .checkout-lines{padding-bottom:8px}
+
+
+.shipping-included-badge{padding:11px 12px;border-radius:12px;background:#e9f3eb;border:1px solid #c5dfca;color:#174d2b;font-size:12px;font-weight:700}
