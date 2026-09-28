@@ -20,7 +20,7 @@ const colours = [
   ["Lavender","#b9a9cf"],
   ["Purple","#70458f"]
 ];
-const kurtaCatalogImage = "/kurta-colour-sprite.svg";
+const kurtaCatalogImage = "/kurta-colour-sprite.webp";
 const sizes = ["S","M","L","XL","XXL"];
 const addOnSizes = ["Small","Medium","Large"];
 const printPositions = ["Front","Back"];
