@@ -46,47 +46,14 @@ export default function Home() {
   const [shippingCity,setShippingCity]=useState("");
   const [shippingState,setShippingState]=useState("");
   const [shippingPincode,setShippingPincode]=useState("");
-  const [shippingCharge,setShippingCharge]=useState<number|null>(null);
-  const [shippingCourier,setShippingCourier]=useState("");
-  const [shippingEtD,setShippingEtD]=useState("");
-  const [shippingLoading,setShippingLoading]=useState(false);
-  const [shippingError,setShippingError]=useState("");
   const [added,setAdded]=useState(false);
   const selectedColourIndex=colours.findIndex(([name])=>name===selectedColour);
   const selectedSpritePosition={backgroundPosition:`${(selectedColourIndex%5)*25}% ${Math.floor(selectedColourIndex/5)*50}%`};
   const patchPrice=(patchFront && patchSize ? patchPrices[patchSize] : 0)+(patchBack ? patchPrices["Large"] : 0);
   const printPrice=printSize ? printPrices[printSize] : 0;
   const total=225+patchPrice+printPrice;
-  const finalTotal=total+(shippingCharge ?? 0);
+  const finalTotal=total;
   const ready=!!kurtaSize && (!patchFront || !!patchSize) && (!printSize || printSize==="Full Print" || !!printPosition);
-
-  async function calculateShipping(){
-    setShippingError("");
-    setShippingCharge(null);
-    setShippingCourier("");
-    setShippingEtD("");
-    if(!customerName.trim() || !customerPhone.trim() || !shippingAddress.trim() || !shippingCity.trim() || !shippingState.trim() || !/^\d{6}$/.test(shippingPincode)){
-      setShippingError("Please enter your name, mobile, full address, city, state and a valid 6-digit pincode.");
-      return;
-    }
-    setShippingLoading(true);
-    try{
-      const res=await fetch("/api/shipping",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({deliveryPincode:shippingPincode,cod:true,weight:0.5,length:30,breadth:25,height:5,declaredValue:total})
-      });
-      const data=await res.json();
-      if(!res.ok) throw new Error(data.error||"Unable to calculate shipping.");
-      setShippingCharge(Number(data.shippingCharge));
-      setShippingCourier(String(data.courierName||""));
-      setShippingEtD(String(data.etd||""));
-    }catch(error){
-      setShippingError(error instanceof Error ? error.message : "Unable to calculate shipping.");
-    }finally{
-      setShippingLoading(false);
-    }
-  }
 
   function filePreview(e:ChangeEvent<HTMLInputElement>,type:"patch"|"print"){
     const file=e.target.files?.[0]; if(!file)return;
@@ -115,7 +82,7 @@ export default function Home() {
     }
     window.open("https://wa.me/917405652991?text="+encodeURIComponent(text), "_blank");
   }
-  const orderText = "Hi Hinglaj Creation, I want to order a custom kurta. Name: "+customerName+"; Mobile: "+customerPhone+"; Address: "+shippingAddress+", "+shippingCity+", "+shippingState+" - "+shippingPincode+"; Colour: "+selectedColour+"; Size: "+kurtaSize+"; Base: ₹225; Patch: "+(patchPrice ? ((patchFront ? patchSize+" Front (Left Chest)" : "") + (patchFront&&patchBack ? " + " : "") + (patchBack ? "Large Back Center" : "") + " / ₹"+patchPrice) : "None")+"; Print: "+(printSize ? printSize+" / "+printPosition+" / ₹"+printPrice : "None")+"; Product Total: ₹"+total+"; Shipping: ₹"+(shippingCharge ?? 0)+"; Final Total: ₹"+finalTotal+"; Courier: "+(shippingCourier||"To be confirmed");
+  const orderText = "Hi Hinglaj Creation, I want to order a custom kurta. Name: "+customerName+"; Mobile: "+customerPhone+"; Address: "+shippingAddress+", "+shippingCity+", "+shippingState+" - "+shippingPincode+"; Colour: "+selectedColour+"; Size: "+kurtaSize+"; Base: ₹225; Patch: "+(patchPrice ? ((patchFront ? patchSize+" Front (Left Chest)" : "") + (patchFront&&patchBack ? " + " : "") + (patchBack ? "Large Back Center" : "") + " / ₹"+patchPrice) : "None")+"; Print: "+(printSize ? printSize+" / "+printPosition+" / ₹"+printPrice : "None")+"; Product Total: ₹"+total+"; Shipping: Included Pan-India; Final Total: ₹"+finalTotal;
 
   return <>
     <header className="nav"><div className="container nav-inner">
@@ -169,32 +136,23 @@ export default function Home() {
       <div className="checkout-summary">
         <div className="checkout-product-card"><div className="checkout-product-photo" style={{backgroundImage:`url(${kurtaCatalogImage})`,backgroundSize:"500% 300%",backgroundPosition:selectedSpritePosition.backgroundPosition}} aria-label={selectedColour+" kurta preview"}></div><div className="checkout-product-info"><b>{selectedColour} Custom Kurta</b><p>Size: {kurtaSize}<br/>Patch: {patchPrice?((patchFront?patchSize+" Front (Left Chest)":"")+(patchFront&&patchBack?" + ":"")+(patchBack?"Large Back Center":"")):"None"}<br/>Print: {printSize?printSize+" · "+(printPosition||"Full Print"):"None"}</p></div></div>
 
-        <div className="shipping-form">
-          <div className="shipping-form-title">Delivery Details</div>
+        <div className="shipping-form shipping-included"><div className="shipping-form-title">Delivery Details</div>
           <input value={customerName} onChange={e=>setCustomerName(e.target.value)} placeholder="Full Name" autoComplete="name"/>
           <input value={customerPhone} onChange={e=>setCustomerPhone(e.target.value.replace(/\D/g,"").slice(0,10))} placeholder="Mobile Number" inputMode="numeric" autoComplete="tel"/>
           <textarea value={shippingAddress} onChange={e=>setShippingAddress(e.target.value)} placeholder="Full Delivery Address" rows={3} autoComplete="street-address"/>
-          <div className="shipping-form-grid">
-            <input value={shippingCity} onChange={e=>setShippingCity(e.target.value)} placeholder="City" autoComplete="address-level2"/>
-            <input value={shippingState} onChange={e=>setShippingState(e.target.value)} placeholder="State" autoComplete="address-level1"/>
-          </div>
+          <div className="shipping-form-grid"><input value={shippingCity} onChange={e=>setShippingCity(e.target.value)} placeholder="City" autoComplete="address-level2"/><input value={shippingState} onChange={e=>setShippingState(e.target.value)} placeholder="State" autoComplete="address-level1"/></div>
           <input value={shippingPincode} onChange={e=>setShippingPincode(e.target.value.replace(/\D/g,"").slice(0,6))} placeholder="Pincode" inputMode="numeric" autoComplete="postal-code"/>
-          <button type="button" className="btn btn-dark full-btn" onClick={calculateShipping} disabled={shippingLoading}>
-            {shippingLoading?"Checking shipping...":"Calculate Shipping"} <ArrowRight size={16}/>
-          </button>
-          {shippingError&&<p className="shipping-error">{shippingError}</p>}
-          {shippingCharge!==null&&<div className="shipping-result"><div><b>Shipping ₹{shippingCharge}</b><span>{shippingCourier||"Shiprocket Courier"}{shippingEtD?" · "+shippingEtD:""}</span></div><Check size={18}/></div>}
+          <div className="shipping-included-badge">✓ Pan-India shipping included in the kurta price</div>
         </div>
 
         <div className="checkout-lines">
           <div><span>Plain Kurta</span><b>₹225</b></div>
           {patchPrice>0&&<div><span>Patch Work</span><b>+ ₹{patchPrice}</b></div>}
           {printSize&&<div><span>{printSize} DTF Print</span><b>+ ₹{printPrice}</b></div>}
-          <div><span>Shipping</span><b>{shippingCharge===null?"—":"₹"+shippingCharge}</b></div>
           <div className="total-row"><span>Final Total</span><b>₹{finalTotal}</b></div>
         </div>
-        <button type="button" className="btn btn-gold cart-wa" disabled={shippingCharge===null} onClick={placeOrderOnWhatsApp}>Place Order on WhatsApp <MessageCircle size={17}/></button>
-        <p className="whatsapp-note">{shippingCharge===null?"Calculate shipping before placing the order.":(patchImage||printImage)?"Your uploaded patch/print will be attached when your phone/browser supports WhatsApp file sharing.":"Your order details and shipping charge will open in WhatsApp."}</p>
+        <button type="button" className="btn btn-gold cart-wa" onClick={placeOrderOnWhatsApp}>Place Order on WhatsApp <MessageCircle size={17}/></button>
+        <p className="whatsapp-note">{(patchImage||printImage)?"Your uploaded patch/print will be attached when your phone/browser supports WhatsApp file sharing.":"Pan-India shipping is included. Your order details will open in WhatsApp."}</p>
       </div>
     </aside></div>}
   </>;
