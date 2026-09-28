@@ -83,7 +83,7 @@ export default function Home() {
       <section className="section shop-section" id="shop"><div className="container">
         <div className="section-head"><div><span className="eyebrow">Step 01</span><h2>Choose Your Plain Kurta</h2><p>Every custom order starts at <strong>₹225</strong>. Choose a colour and add the plain kurta to your cart.</p></div></div>
         <div className="plain-grid">{filtered.map((p,i)=><article className={"plain-card "+(selectedColour===p[2]?"plain-selected":"")} key={p[2]}>
-          <button className="plain-visual kurta-photo" style={{backgroundImage:"url("+kurtaCatalogImage+")",backgroundPosition:(i*12.5)+"% top"}} onClick={()=>{setSelectedColour(p[2]);setSelectedTone(p[3]);}} aria-label={p[2]+" kurta"} />
+          <button className="plain-visual kurta-photo" style={{backgroundImage:"url("+kurtaCatalogImage+")",backgroundPosition:((i%3)*50)+"% "+(Math.floor(i/3)*50)+"%"}} onClick={()=>{setSelectedColour(p[2]);setSelectedTone(p[3]);}} aria-label={p[2]+" kurta"} />
           <div className="plain-body"><div className="product-type">{p[2]}</div><h3>{p[0]}</h3><div className="meta">S–XXL · Plain base</div><div className="product-bottom"><span className="price">₹225</span><button className="btn btn-dark" onClick={()=>choosePlain(p[2],p[3])}>Add to Cart <ShoppingBag size={15}/></button></div></div>
         </article>)}</div>
       </div></section>
