@@ -505,3 +505,11 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 .brochure-download span{font-size:18px;line-height:1}
 .brochure-download-wrap p{margin:0;color:var(--muted);font-size:12px}
 @media(max-width:560px){.brochure-download-wrap{display:block}.brochure-download{width:100%;justify-content:center}.brochure-download-wrap p{text-align:center;margin-top:8px}}
+
+
+.cart-item-card{align-items:flex-start;position:relative}
+.cart-item-card .checkout-product-info{flex:1}
+.cart-item-card .checkout-product-info>strong{display:block;margin-top:7px;font-size:15px}
+.cart-remove{margin-top:7px;border:0;background:none;padding:0;color:#a63d35;font-size:11px;font-weight:800;cursor:pointer}
+.cart-empty{padding:20px;text-align:center;color:var(--muted)}
+.cart-badge{position:absolute;right:-4px;top:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:#b51f2a;color:#fff;font-size:9px;display:grid;place-items:center;font-weight:800}
