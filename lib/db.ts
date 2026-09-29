@@ -32,6 +32,7 @@ export function ensureSchema() {
         "CREATE INDEX IF NOT EXISTS orders_phone_idx ON orders(customer_phone);" +
         "CREATE INDEX IF NOT EXISTS orders_created_idx ON orders(created_at DESC);"
       );
+      await db().query("ALTER TABLE orders ADD COLUMN IF NOT EXISTS items JSONB NOT NULL DEFAULT '[]'::jsonb");
     })().catch(error => { schemaReady = null; throw error; });
   }
   return schemaReady;
