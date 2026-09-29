@@ -172,7 +172,7 @@ export default function Home() {
 
       <section className="section product-details-section" id="product-details"><div className="container">
   <div className="section-head"><div><span className="eyebrow">Product Details</span><h2>Build Your Kurta Your Way</h2><p>A men's long kurta designed as the perfect base for your own patch, DTF print, or combination.</p></div></div>
-  <div className="brochure-download-wrap"><a className="btn btn-gold brochure-download" href="/kurta-catalog.webp" download="Hinglaj-Creation-Brochure.webp">Download Brochure <span>↓</span></a><p>Download our Hinglaj Creation kurta catalogue.</p></div>
+  <div className="brochure-download-wrap"><a className="btn btn-gold brochure-download" href="/Hinglaj%20Creation%20Catalogue-1.pdf" download="Hinglaj-Creation-Brochure.pdf">Download Brochure <span>↓</span></a><p>Download our Hinglaj Creation kurta catalogue.</p></div>
   <div className="product-details-grid">
     <div className="product-detail-card"><span className="product-detail-icon">👕</span><h3>Kurta Details</h3><ul><li>Men's long kurta</li><li>Sizes S, M, L, XL & XXL</li><li>15 colour options</li><li>Plain kurta starting at ₹249</li><li>Designed for custom patch & DTF printing</li><li>Pan-India shipping included</li></ul></div>
     <div className="product-detail-card"><span className="product-detail-icon">✦</span><h3>Patch Work</h3><ul><li>Left Chest — Small / Medium / Large</li><li>Right Chest — Small / Medium / Large</li><li>Sleeves — ₹100</li><li>Long Front — ₹150</li><li>Back Center — ₹150</li><li>Multiple Small — ₹50 each</li><li>Multiple placements can be combined</li></ul></div>
