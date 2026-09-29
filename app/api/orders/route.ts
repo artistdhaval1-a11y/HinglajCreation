@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
     const phone = String(params.get("phone") || "").replace(/\D/g,"");
     if (!/^\d{10}$/.test(phone)) return NextResponse.json({error:"Enter a valid 10-digit mobile number."},{status:400});
     const result = await db().query(
-      "SELECT order_code,customer_name,customer_phone,shipping_address,shipping_city,shipping_state,shipping_pincode,colour,size,patch_details,patch_price,print_details,print_price,total,status,courier_name,tracking_number,tracking_url,created_at,updated_at FROM orders WHERE customer_phone=$1 ORDER BY created_at DESC",
+      "SELECT order_code,customer_name,customer_phone,shipping_address,shipping_city,shipping_state,shipping_pincode,colour,size,patch_details,patch_price,print_details,print_price,total,status,courier_name,tracking_number,tracking_url,items,created_at,updated_at FROM orders WHERE customer_phone=$1 ORDER BY created_at DESC",
       [phone]
     );
     return NextResponse.json({orders:result.rows});
@@ -71,7 +71,7 @@ export async function PATCH(request: NextRequest) {
     const phone = String(body.phone||"").replace(/\D/g,"");
     if (!/^HC-\d+$/.test(orderId) || !/^\d{10}$/.test(phone)) return NextResponse.json({error:"Enter a valid Order ID and mobile number."},{status:400});
     const result = await db().query(
-      "SELECT order_code,customer_name,customer_phone,shipping_address,shipping_city,shipping_state,shipping_pincode,colour,size,patch_details,patch_price,print_details,print_price,total,status,courier_name,tracking_number,tracking_url,created_at,updated_at FROM orders WHERE order_code=$1 AND customer_phone=$2 LIMIT 1",
+      "SELECT order_code,customer_name,customer_phone,shipping_address,shipping_city,shipping_state,shipping_pincode,colour,size,patch_details,patch_price,print_details,print_price,total,status,courier_name,tracking_number,tracking_url,items,created_at,updated_at FROM orders WHERE order_code=$1 AND customer_phone=$2 LIMIT 1",
       [orderId,phone]
     );
     if (!result.rowCount) return NextResponse.json({error:"No order found for these details."},{status:404});
