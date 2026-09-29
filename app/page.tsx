@@ -25,7 +25,7 @@ const sizes = ["S","M","L","XL","XXL"];
 const addOnSizes = ["Small","Medium","Large"];
 const printPositions = ["Front","Back"];
 const patchPrices: Record<string,number> = { Small:50, Medium:100, Large:150 };
-const frontPatchOptions = ["Left Chest","Multiple","Long","Sleeves"];
+const patchPlacementOptions = ["Left Chest","Right Chest","Sleeves","Long Front","Back Center","Multiple Small"];
 const multipleQuantities = [2,3,4,5];
 const printPrices: Record<string,number> = { Small:50, Medium:100, Large:150, "Full Print":250 };
 
@@ -34,9 +34,8 @@ export default function Home() {
   const [selectedTone,setSelectedTone]=useState("#f5f2ea");
   const [kurtaSize,setKurtaSize]=useState("");
   const [patchSize,setPatchSize]=useState("");
-  const [frontPatchOption,setFrontPatchOption]=useState("");
+  const [patchPlacements,setPatchPlacements]=useState<string[]>([]);
   const [multipleQuantity,setMultipleQuantity]=useState(2);
-  const [patchBack,setPatchBack]=useState(false);
   const [printSize,setPrintSize]=useState("");
   const [printPosition,setPrintPosition]=useState("");
   const [patchImage,setPatchImage]=useState("");
@@ -53,14 +52,25 @@ export default function Home() {
   const [orderCreatedId,setOrderCreatedId]=useState("");
   const selectedColourIndex=colours.findIndex(([name])=>name===selectedColour);
   const selectedSpritePosition={backgroundPosition:`${(selectedColourIndex%5)*25}% ${Math.floor(selectedColourIndex/5)*50}%`};
-  const frontPatchPrice=frontPatchOption==="Left Chest" && patchSize ? patchPrices[patchSize] : frontPatchOption==="Multiple" ? multipleQuantity*50 : frontPatchOption==="Long" ? 150 : frontPatchOption==="Sleeves" ? 100 : 0;
-  const patchPrice=frontPatchPrice+(patchBack ? patchPrices["Large"] : 0);
-  const patchDetailsText=frontPatchOption==="Left Chest" ? `Small/Medium/Large ${patchSize} Front (Left Chest)` : frontPatchOption==="Multiple" ? `Multiple Small Front (${multipleQuantity} patches)` : frontPatchOption==="Long" ? "Long Front" : frontPatchOption==="Sleeves" ? "Sleeves" : "";
-  const patchOrderText=frontPatchOption ? patchDetailsText+(patchBack ? " + Large Back Center" : "")+` / ₹${patchPrice}` : patchBack ? `Large Back Center / ₹${patchPrice}` : "None";
+  const chestSelected=patchPlacements.includes("Left Chest") || patchPlacements.includes("Right Chest");
+  const patchPrice=patchPlacements.reduce((sum,placement)=>{
+    if(placement==="Left Chest" || placement==="Right Chest") return sum+(patchSize ? patchPrices[patchSize] : 0);
+    if(placement==="Sleeves") return sum+100;
+    if(placement==="Long Front") return sum+150;
+    if(placement==="Back Center") return sum+150;
+    if(placement==="Multiple Small") return sum+(multipleQuantity*50);
+    return sum;
+  },0);
+  const patchDetailsText=patchPlacements.map(placement=>{
+    if(placement==="Left Chest" || placement==="Right Chest") return patchSize+" "+placement;
+    if(placement==="Multiple Small") return "Multiple Small ("+multipleQuantity+" patches)";
+    return placement;
+  }).join(" + ");
+  const patchOrderText=patchPlacements.length ? patchDetailsText+" / ₹"+patchPrice : "None";
   const printPrice=printSize ? printPrices[printSize] : 0;
   const total=249+patchPrice+printPrice;
   const finalTotal=total;
-  const ready=!!kurtaSize && (!frontPatchOption || frontPatchOption!=="Left Chest" || !!patchSize) && (!printSize || printSize==="Full Print" || !!printPosition);
+  const ready=!!kurtaSize && (!chestSelected || !!patchSize) && (!printSize || printSize==="Full Print" || !!printPosition);
 
   function filePreview(e:ChangeEvent<HTMLInputElement>,type:"patch"|"print"){
     const file=e.target.files?.[0]; if(!file)return;
@@ -148,7 +158,7 @@ export default function Home() {
           <div className="builder-options">
             <div className="builder-card"><div className="builder-title"><span>1</span><div><h3>Kurta Size</h3><p>Choose your fitting size.</p></div></div><div className="option-grid kurta-size-grid">{sizes.map(s=><button key={s} className={"choice "+(kurtaSize===s?"choice-active":"")} onClick={()=>setKurtaSize(s)}>{s}</button>)}</div></div>
 
-            <div className="builder-card"><div className="builder-title"><span>2</span><div><h3>Patch Work <em>Optional</em></h3><p>Choose a front style, back, or both.</p></div></div><div className="option-label">Front patch option</div><div className="option-grid">{frontPatchOptions.map(option=><button key={option} className={"choice "+(frontPatchOption===option?"choice-active":"")} onClick={()=>{setFrontPatchOption(frontPatchOption===option?"":option);if(option!=="Left Chest")setPatchSize("");}}>{option}{option==="Long"&&<small>₹150</small>}{option==="Sleeves"&&<small>₹100</small>}{option==="Multiple"&&<small>Small · ₹50 each</small>}</button>)}</div>{frontPatchOption==="Left Chest"&&<><div className="option-label">Patch size</div><div className="option-grid">{addOnSizes.map(s=><button key={s} className={"choice "+(patchSize===s?"choice-active":"")} onClick={()=>setPatchSize(patchSize===s?"":s)}>{s}<small>₹{patchPrices[s]}</small></button>)}</div></>}{frontPatchOption==="Multiple"&&<><div className="option-label">Multiple small patches</div><select className="quantity-select" value={multipleQuantity} onChange={e=>setMultipleQuantity(Number(e.target.value))}>{multipleQuantities.map(q=><option key={q} value={q}>Quantity: {q} — ₹{q*50}</option>)}</select></>}<div className="option-label">Back patch</div><button className={"choice "+(patchBack?"choice-active":"")} onClick={()=>setPatchBack(!patchBack)}>Back Center — Large<small>₹150</small></button>{(frontPatchOption||patchBack)&&<label className="upload-box"><span>Upload your patch</span><small>PNG/JPG · used for selected placement(s)</small><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>filePreview(e,"patch")}/>{patchImage&&<b>✓ Patch uploaded</b>}</label>}</div>
+            <div className="builder-card"><div className="builder-title"><span>2</span><div><h3>Patch Work <em>Optional</em></h3><p>Select one or more placements. You can combine them.</p></div></div><div className="option-label">Choose patch placement(s)</div><div className="option-grid patch-placement-grid">{patchPlacementOptions.map(option=><button key={option} className={"choice "+(patchPlacements.includes(option)?"choice-active":"")} onClick={()=>setPatchPlacements(prev=>prev.includes(option)?prev.filter(item=>item!==option):[...prev,option])}>{option}<small>{option==="Left Chest"||option==="Right Chest"?"Choose size":option==="Sleeves"?"₹100":option==="Long Front"?"₹150":option==="Back Center"?"₹150":"₹50 each"}</small></button>)}</div>{chestSelected&&<><div className="option-label">Chest patch size</div><div className="option-grid">{addOnSizes.map(s=><button key={s} className={"choice "+(patchSize===s?"choice-active":"")} onClick={()=>setPatchSize(patchSize===s?"":s)}>{s}<small>₹{patchPrices[s]} per chest</small></button>)}</div></>}{patchPlacements.includes("Multiple Small")&&<><div className="option-label">Multiple small patches</div><select className="quantity-select" value={multipleQuantity} onChange={e=>setMultipleQuantity(Number(e.target.value))}>{multipleQuantities.map(q=><option key={q} value={q}>Quantity: {q} — ₹{q*50}</option>)}</select></>}{patchPlacements.length>0&&<label className="upload-box"><span>Upload your patch</span><small>PNG/JPG · used for all selected placement(s)</small><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>filePreview(e,"patch")}/>{patchImage&&<b>✓ Patch uploaded</b>}</label>}<div className="patch-selection-note">{patchPlacements.length?"Selected: "+patchPlacements.join(" + "):"No patch selected"}</div></div>
 
             <div className="builder-card"><div className="builder-title"><span>3</span><div><h3>DTF Print <em>Optional</em></h3><p>Small ₹50 · Medium ₹100 · Large ₹150 · Full Print ₹250.</p></div></div><div className="option-label">Print option</div><div className="option-grid">{addOnSizes.map(s=><button key={s} className={"choice "+(printSize===s?"choice-active":"")} onClick={()=>{setPrintSize(printSize===s?"":s);if(printSize===s)setPrintPosition("");}}>{s}<small>₹{printPrices[s]}</small></button>)}<button className={"choice "+(printSize==="Full Print"?"choice-active":"")} onClick={()=>{setPrintSize(printSize==="Full Print"?"":"Full Print");setPrintPosition("");}}>Full Print<small>₹250</small></button></div>{printSize&&<>{printSize!=="Full Print"&&<><div className="option-label">Print placement</div><div className="option-grid two">{printPositions.map(s=><button key={s} className={"choice "+(printPosition===s?"choice-active":"")} onClick={()=>setPrintPosition(s)}>{s}</button>)}</div></>}<label className="upload-box"><span>Upload your DTF print</span><small>PNG/JPG · transparent PNG recommended</small><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>filePreview(e,"print")}/>{printImage&&<b>✓ Print uploaded</b>}</label></>}</div>
 
