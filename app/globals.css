@@ -513,3 +513,33 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 .cart-remove{margin-top:7px;border:0;background:none;padding:0;color:#a63d35;font-size:11px;font-weight:800;cursor:pointer}
 .cart-empty{padding:20px;text-align:center;color:var(--muted)}
 .cart-badge{position:absolute;right:-4px;top:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:#b51f2a;color:#fff;font-size:9px;display:grid;place-items:center;font-weight:800}
+
+/* Responsive image sizing: preserve the kurta image proportions on every screen */
+.preview-photo{
+  width:min(94%,460px);
+  height:auto!important;
+  aspect-ratio:7/10!important;
+  max-height:none!important;
+}
+.preview-stage{
+  height:auto!important;
+  min-height:0!important;
+}
+@media(max-width:900px){
+  .preview-photo{
+    width:min(96%,500px);
+    height:auto!important;
+    aspect-ratio:7/10!important;
+  }
+}
+@media(max-width:560px){
+  .preview-stage{
+    height:auto!important;
+    padding:0!important;
+  }
+  .preview-photo{
+    width:96%;
+    height:auto!important;
+    aspect-ratio:7/10!important;
+  }
+}
