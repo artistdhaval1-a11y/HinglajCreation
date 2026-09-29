@@ -23,16 +23,8 @@ export async function POST(request: NextRequest) {
     try {
       await client.query("BEGIN");
       const inserted = await client.query(
-        "INSERT INTO orders (order_code,customer_name,customer_phone,shipping_address,shipping_city,shipping_state,shipping_pincode,colour,size,patch_details,patch_price,print_details,print_price,total,patch_uploaded,print_uploaded) " +
-        "VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING id",
-        [
-          "TEMP-"+Date.now()+"-"+Math.random().toString(36).slice(2,8),
-          body.customerName.trim(), body.customerPhone, body.shippingAddress.trim(), body.shippingCity.trim(),
-          body.shippingState.trim(), body.shippingPincode, body.colour, body.size,
-          body.patchDetails || "None", Number(body.patchPrice)||0,
-          body.printDetails || "None", Number(body.printPrice)||0, Number(body.total)||0,
-          !!body.patchUploaded, !!body.printUploaded
-        ]
+        "INSERT INTO orders (order_code,customer_name,customer_phone,shipping_address,shipping_city,shipping_state,shipping_pincode,colour,size,patch_details,patch_price,print_details,print_price,total,patch_uploaded,print_uploaded) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING id",
+        ["TEMP-"+Date.now()+"-"+Math.random().toString(36).slice(2,8), body.customerName.trim(), body.customerPhone, body.shippingAddress.trim(), body.shippingCity.trim(), body.shippingState.trim(), body.shippingPincode, body.colour, body.size, body.patchDetails || "None", Number(body.patchPrice)||0, body.printDetails || "None", Number(body.printPrice)||0, Number(body.total)||0, !!body.patchUploaded, !!body.printUploaded]
       );
       const id = inserted.rows[0].id as number;
       const orderCode = "HC-" + String(id).padStart(4,"0");
@@ -42,9 +34,7 @@ export async function POST(request: NextRequest) {
     } catch(error) {
       await client.query("ROLLBACK");
       throw error;
-    } finally {
-      client.release();
-    }
+    } finally { client.release(); }
   } catch(error) {
     console.error("Create order error", error);
     return NextResponse.json({error:"Could not save the order. Please try again."},{status:500});
@@ -54,9 +44,18 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     await ensureSchema();
-    if (new URL(request.url).searchParams.get("mode") !== "admin") return NextResponse.json({error:"Use the order lookup form."},{status:405});
-    if (!adminOk(request)) return NextResponse.json({error:"Unauthorized"},{status:401});
-    const result = await db().query("SELECT * FROM orders ORDER BY created_at DESC LIMIT 500");
+    const params = new URL(request.url).searchParams;
+    if (params.get("mode") === "admin") {
+      if (!adminOk(request)) return NextResponse.json({error:"Unauthorized"},{status:401});
+      const result = await db().query("SELECT * FROM orders ORDER BY created_at DESC LIMIT 500");
+      return NextResponse.json({orders:result.rows});
+    }
+    const phone = String(params.get("phone") || "").replace(/\D/g,"");
+    if (!/^\d{10}$/.test(phone)) return NextResponse.json({error:"Enter a valid 10-digit mobile number."},{status:400});
+    const result = await db().query(
+      "SELECT order_code,customer_name,customer_phone,shipping_address,shipping_city,shipping_state,shipping_pincode,colour,size,patch_details,patch_price,print_details,print_price,total,status,courier_name,tracking_number,tracking_url,created_at,updated_at FROM orders WHERE customer_phone=$1 ORDER BY created_at DESC",
+      [phone]
+    );
     return NextResponse.json({orders:result.rows});
   } catch(error) {
     console.error("Get orders error", error);
@@ -72,8 +71,7 @@ export async function PATCH(request: NextRequest) {
     const phone = String(body.phone||"").replace(/\D/g,"");
     if (!/^HC-\d+$/.test(orderId) || !/^\d{10}$/.test(phone)) return NextResponse.json({error:"Enter a valid Order ID and mobile number."},{status:400});
     const result = await db().query(
-      "SELECT order_code,customer_name,customer_phone,shipping_address,shipping_city,shipping_state,shipping_pincode,colour,size,patch_details,patch_price,print_details,print_price,total,status,courier_name,tracking_number,tracking_url,created_at,updated_at " +
-      "FROM orders WHERE order_code=$1 AND customer_phone=$2 LIMIT 1",
+      "SELECT order_code,customer_name,customer_phone,shipping_address,shipping_city,shipping_state,shipping_pincode,colour,size,patch_details,patch_price,print_details,print_price,total,status,courier_name,tracking_number,tracking_url,created_at,updated_at FROM orders WHERE order_code=$1 AND customer_phone=$2 LIMIT 1",
       [orderId,phone]
     );
     if (!result.rowCount) return NextResponse.json({error:"No order found for these details."},{status:404});
@@ -90,10 +88,7 @@ export async function PUT(request: NextRequest) {
     if (!adminOk(request)) return NextResponse.json({error:"Unauthorized"},{status:401});
     const body = await request.json();
     if (!body.orderId || !STATUSES.includes(body.status)) return NextResponse.json({error:"Invalid order update."},{status:400});
-    const result = await db().query(
-      "UPDATE orders SET status=$1,courier_name=$2,tracking_number=$3,tracking_url=$4,updated_at=NOW() WHERE order_code=$5 RETURNING order_code",
-      [body.status,body.courierName||null,body.trackingNumber||null,body.trackingUrl||null,body.orderId]
-    );
+    const result = await db().query("UPDATE orders SET status=$1,courier_name=$2,tracking_number=$3,tracking_url=$4,updated_at=NOW() WHERE order_code=$5 RETURNING order_code",[body.status,body.courierName||null,body.trackingNumber||null,body.trackingUrl||null,body.orderId]);
     if (!result.rowCount) return NextResponse.json({error:"Order not found."},{status:404});
     return NextResponse.json({ok:true});
   } catch(error) {
