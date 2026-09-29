@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       await client.query("BEGIN");
       const inserted = await client.query(
         "INSERT INTO orders (order_code,customer_name,customer_phone,shipping_address,shipping_city,shipping_state,shipping_pincode,colour,size,patch_details,patch_price,print_details,print_price,total,patch_uploaded,print_uploaded,items) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) RETURNING id",
-        ["TEMP-"+Date.now()+"-"+Math.random().toString(36).slice(2,8), body.customerName.trim(), body.customerPhone, body.shippingAddress.trim(), body.shippingCity.trim(), body.shippingState.trim(), body.shippingPincode, [body.colour, body.size, body.patchDetails || "None", Number(body.patchPrice)||0, body.printDetails || "None", Number(body.printPrice)||0, Number(body.total)||0, !!body.patchUploaded, !!body.printUploaded, JSON.stringify(body.items || [])]
+        ["TEMP-"+Date.now()+"-"+Math.random().toString(36).slice(2,8), body.customerName.trim(), body.customerPhone, body.shippingAddress.trim(), body.shippingCity.trim(), body.shippingState.trim(), body.shippingPincode, body.colour, body.size, body.patchDetails || "None", Number(body.patchPrice)||0, body.printDetails || "None", Number(body.printPrice)||0, Number(body.total)||0, !!body.patchUploaded, !!body.printUploaded, JSON.stringify(body.items || [])
       );
       const id = inserted.rows[0].id as number;
       const orderCode = "HC-" + String(id).padStart(4,"0");
