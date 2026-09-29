@@ -28,6 +28,7 @@ const patchPrices: Record<string,number> = { Small:50, Medium:100, Large:150 };
 const patchPlacementOptions = ["Left Chest","Right Chest","Sleeves","Long Front","Back Center","Multiple Small"];
 const multipleQuantities = [2,3,4,5];
 const printPrices: Record<string,number> = { Small:50, Medium:100, Large:150, "Full Print":250 };
+type CartItem = { colour:string; tone:string; size:string; patchDetails:string; patchPrice:number; printDetails:string; printPrice:number; total:number; patchImage:string; printImage:string };
 
 export default function Home() {
   const [selectedColour,setSelectedColour]=useState("White");
@@ -49,6 +50,7 @@ export default function Home() {
   const [shippingState,setShippingState]=useState("");
   const [shippingPincode,setShippingPincode]=useState("");
   const [added,setAdded]=useState(false);
+  const [cartItems,setCartItems]=useState<CartItem[]>([]);
   const [orderCreatedId,setOrderCreatedId]=useState("");
   const selectedColourIndex=colours.findIndex(([name])=>name===selectedColour);
   const selectedSpritePosition={backgroundPosition:`${(selectedColourIndex%5)*25}% ${Math.floor(selectedColourIndex/5)*50}%`};
@@ -72,7 +74,8 @@ export default function Home() {
   const printPrice=printSize ? printBasePrice*(printPlacementCount||1) : 0;
   const printDetailsText=printSize ? printSize+" / "+(printPosition||"Placement not selected")+" / ₹"+printPrice : "None";
   const total=249+patchPrice+printPrice;
-  const finalTotal=total;
+  const cartTotal=cartItems.reduce((sum,item)=>sum+item.total,0);
+  const finalTotal=cartTotal;
   const ready=!!kurtaSize && (!chestSelected || !!patchSize) && (!printSize || printSize==="Full Print" || !!printPosition);
 
   function filePreview(e:ChangeEvent<HTMLInputElement>,type:"patch"|"print"){
@@ -81,52 +84,25 @@ export default function Home() {
     reader.onload=()=>type==="patch"?setPatchImage(String(reader.result)):setPrintImage(String(reader.result));
     reader.readAsDataURL(file);
   }
-  function addToCart(){if(ready){setAdded(true);setCartOpen(true);}}
+  function addToCart(){if(!ready){window.alert("Please select a kurta size and complete the required customization selections.");return;} const item:CartItem={colour:selectedColour,tone:selectedTone,size:kurtaSize,patchDetails:patchOrderText,patchPrice,printDetails:printDetailsText,printPrice,total,patchImage,printImage}; setCartItems(prev=>[...prev,item]); setAdded(true); setOrderCreatedId(""); setCartOpen(true);}
+  function removeCartItem(index:number){setCartItems(prev=>prev.filter((_,i)=>i!==index));}
+  function continueShopping(){setCartOpen(false);}
   async function placeOrderOnWhatsApp(){
-    if(!kurtaSize){ window.alert("Please select a kurta size (S, M, L, XL or XXL)."); return; }
-    if(!customerName.trim() || !/^\d{10}$/.test(customerPhone) || !shippingAddress.trim() || !shippingCity.trim() || !shippingState.trim() || !/^\d{6}$/.test(shippingPincode)){
-      window.alert("Please complete your name, 10-digit mobile number and full delivery address.");
-      return;
-    }
-    let savedOrderId=orderCreatedId;
-    if(!savedOrderId){
-      try{
-        const patchDetails=patchOrderText;
-        const printDetails=printDetailsText;
-        const res=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-          customerName,customerPhone,shippingAddress,shippingCity,shippingState,shippingPincode,
-          colour:selectedColour,size:kurtaSize,patchDetails,patchPrice,printDetails,printPrice,total,
-          patchUploaded:!!patchImage,printUploaded:!!printImage
-        })});
-        const data=await res.json();
-        if(!res.ok) throw new Error(data.error||"Could not save order.");
-        savedOrderId=data.orderId;
-        setOrderCreatedId(savedOrderId);
-      }catch(error){
-        window.alert(error instanceof Error?error.message:"Could not save the order. Please try again.");
-        return;
-      }
-    }
-    const text = "Order ID: "+savedOrderId+"; "+orderText + (patchImage || printImage ? "; Uploaded artwork: attached with this order." : "");
-    const files: File[] = [];
-    async function dataUrlToFile(dataUrl:string, name:string){
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
-      return new File([blob], name, { type: blob.type || "image/jpeg" });
-    }
+    if(!cartItems.length){window.alert("Please add at least one kurta to your cart.");return;}
+    if(!customerName.trim()||!/^\d{10}$/.test(customerPhone)||!shippingAddress.trim()||!shippingCity.trim()||!shippingState.trim()||!/^\d{6}$/.test(shippingPincode)){window.alert("Please complete your name, 10-digit mobile number and full delivery address.");return;}
     try{
-      if(patchImage) files.push(await dataUrlToFile(patchImage, "hinglaj-patch.jpg"));
-      if(printImage) files.push(await dataUrlToFile(printImage, "hinglaj-dtf-print.jpg"));
-      if(files.length && typeof navigator !== "undefined" && "share" in navigator && "canShare" in navigator && navigator.canShare({files})){
-        await navigator.share({title:"Hinglaj Creation Order", text, files});
-        return;
-      }
-    }catch(error){
-      if(error instanceof DOMException && error.name === "AbortError") return;
-    }
-    window.open("https://wa.me/917405652991?text="+encodeURIComponent(text), "_blank");
+      const items=cartItems.map((item,index)=>({itemNumber:index+1,colour:item.colour,size:item.size,patchDetails:item.patchDetails,patchPrice:item.patchPrice,printDetails:item.printDetails,printPrice:item.printPrice,total:item.total,patchUploaded:!!item.patchImage,printUploaded:!!item.printImage}));
+      const first=cartItems[0];
+      const res=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({customerName,customerPhone,shippingAddress,shippingCity,shippingState,shippingPincode,colour:first.colour,size:first.size,patchDetails:items.map(i=>i.patchDetails).join(" | "),patchPrice:items.reduce((n,i)=>n+i.patchPrice,0),printDetails:items.map(i=>i.printDetails).join(" | "),printPrice:items.reduce((n,i)=>n+i.printPrice,0),total:cartTotal,patchUploaded:items.some(i=>i.patchUploaded),printUploaded:items.some(i=>i.printUploaded),items})});
+      const data=await res.json();if(!res.ok)throw new Error(data.error||"Could not save order.");setOrderCreatedId(data.orderId);
+      const lines=cartItems.map((item,index)=>(index+1)+". "+item.colour+" Kurta · Size "+item.size+" · "+item.patchDetails+" · "+item.printDetails+" · ₹"+item.total).join("\n");
+      const text="Hi Hinglaj Creation, I want to order "+cartItems.length+" custom kurta(s).\nOrder ID: "+data.orderId+"\nName: "+customerName+"\nMobile: "+customerPhone+"\nAddress: "+shippingAddress+", "+shippingCity+", "+shippingState+" - "+shippingPincode+"\n\nItems:\n"+lines+"\n\nFinal Total: ₹"+cartTotal+"\nShipping: Included Pan-India";
+      const files:File[]=[];async function dataUrlToFile(dataUrl:string,name:string){const res=await fetch(dataUrl);const blob=await res.blob();return new File([blob],name,{type:blob.type||"image/jpeg"});}
+      for(let i=0;i<cartItems.length;i++){if(cartItems[i].patchImage)files.push(await dataUrlToFile(cartItems[i].patchImage,"hinglaj-patch-"+(i+1)+".jpg"));if(cartItems[i].printImage)files.push(await dataUrlToFile(cartItems[i].printImage,"hinglaj-dtf-"+(i+1)+".jpg"));}
+      if(files.length&&typeof navigator!=="undefined"&&"share" in navigator&&"canShare" in navigator&&navigator.canShare({files})){await navigator.share({title:"Hinglaj Creation Order",text,files});return;}window.open("https://wa.me/917405652991?text="+encodeURIComponent(text),"_blank");
+    }catch(error){window.alert(error instanceof Error?error.message:"Could not save the order. Please try again.");}
   }
-  const orderText = "Hi Hinglaj Creation, I want to order a custom kurta. Name: "+customerName+"; Mobile: "+customerPhone+"; Address: "+shippingAddress+", "+shippingCity+", "+shippingState+" - "+shippingPincode+"; Colour: "+selectedColour+"; Size: "+kurtaSize+"; Base: ₹249; Patch: "+patchOrderText+"; Print: "+printDetailsText+"; Product Total: ₹"+total+"; Shipping: Included Pan-India; Final Total: ₹"+finalTotal;
+  const orderText = "Hi Hinglaj Creation, cart has "+cartItems.length+" kurta(s). Final Total: ₹"+cartTotal;
 
   return <>
     <header className="nav"><div className="container nav-inner">
@@ -188,27 +164,22 @@ export default function Home() {
     <footer className="footer" id="contact"><div className="container footer-grid"><div><img className="footer-logo" src="/hinglaj-logo.svg" alt="Hinglaj Creation"/><p>Custom men's kurtas. Start with a plain kurta and build your own print and patch combination.</p></div><div><b>Pricing</b><p>Plain Kurta ₹249<br/>Patch ₹50–₹150<br/>DTF Print ₹50–₹150 · Full Print ₹250</p></div><div><b>Connect</b><p>WhatsApp: 7405652991<br/>Instagram: @hinglaj.creation.store</p><div className="btn-row"><a className="btn btn-gold" href="https://wa.me/917405652991" target="_blank"><MessageCircle size={16}/> WhatsApp</a><a className="btn btn-light" href="https://instagram.com/hinglaj.creation.store" target="_blank"><Instagram size={16}/> Instagram</a></div></div></div></footer>
 
     {cartOpen&&<div className="drawer-backdrop" onClick={()=>setCartOpen(false)}><aside className="cart-drawer" onClick={e=>e.stopPropagation()}>
-      <div className="drawer-head"><h3>Checkout & Shipping</h3><button className="icon-btn" onClick={()=>setCartOpen(false)}><X size={18}/></button></div>
+      <div className="drawer-head"><h3>Your Cart ({cartItems.length})</h3><button className="icon-btn" onClick={()=>setCartOpen(false)}><X size={18}/></button></div>
       <div className="checkout-summary">
-        <div className="checkout-product-card"><div className="checkout-product-photo" style={{backgroundImage:`url(${kurtaCatalogImage})`,backgroundSize:"500% 300%",backgroundPosition:selectedSpritePosition.backgroundPosition}} aria-label={selectedColour+" kurta preview"}></div><div className="checkout-product-info"><b>{selectedColour} Custom Kurta</b><p>Size: {kurtaSize}<br/>Patch: {patchOrderText.replace(" / ₹"+patchPrice,"")}<br/>Print: {printSize?printSize+" · "+(printPosition||"Full Print"):"None"}</p></div></div>
-
+        {cartItems.map((item,index)=><div className="checkout-product-card cart-item-card" key={index}><div className="checkout-product-photo" style={{backgroundImage:`url(${kurtaCatalogImage})`,backgroundSize:"500% 300%",backgroundPosition:`${(colours.findIndex(([name])=>name===item.colour)%5)*25}% ${Math.floor(colours.findIndex(([name])=>name===item.colour)/5)*50}%`}}/><div className="checkout-product-info"><b>{index+1}. {item.colour} Custom Kurta</b><p>Size: {item.size}<br/>Patch: {item.patchDetails.replace(" / ₹"+item.patchPrice,"")}<br/>Print: {item.printDetails.replace(" / ₹"+item.printPrice,"")}</p><strong>₹{item.total}</strong><button className="cart-remove" onClick={()=>removeCartItem(index)}>Remove</button></div></div>)}
+        {!cartItems.length&&<p className="cart-empty">Your cart is empty.</p>}
+        {cartItems.length>0&&<button type="button" className="btn btn-light full-btn" onClick={continueShopping}>+ Add Another Kurta</button>}
         <div className="shipping-form shipping-included"><div className="shipping-form-title">Delivery Details</div>
           <input value={customerName} onChange={e=>setCustomerName(e.target.value)} placeholder="Full Name" autoComplete="name"/>
-          <input value={customerPhone} onChange={e=>setCustomerPhone(e.target.value.replace(/\D/g,"").slice(0,10))} placeholder="Mobile Number" inputMode="numeric" autoComplete="tel"/>
+          <input value={customerPhone} onChange={e=>setCustomerPhone(e.target.value.replace(/D/g,"").slice(0,10))} placeholder="Mobile Number" inputMode="numeric" autoComplete="tel"/>
           <textarea value={shippingAddress} onChange={e=>setShippingAddress(e.target.value)} placeholder="Full Delivery Address" rows={3} autoComplete="street-address"/>
           <div className="shipping-form-grid"><input value={shippingCity} onChange={e=>setShippingCity(e.target.value)} placeholder="City" autoComplete="address-level2"/><input value={shippingState} onChange={e=>setShippingState(e.target.value)} placeholder="State" autoComplete="address-level1"/></div>
-          <input value={shippingPincode} onChange={e=>setShippingPincode(e.target.value.replace(/\D/g,"").slice(0,6))} placeholder="Pincode" inputMode="numeric" autoComplete="postal-code"/>
+          <input value={shippingPincode} onChange={e=>setShippingPincode(e.target.value.replace(/D/g,"").slice(0,6))} placeholder="Pincode" inputMode="numeric" autoComplete="postal-code"/>
           <div className="shipping-included-badge">✓ Pan-India shipping included in the kurta price</div>
         </div>
-
-        <div className="checkout-lines">
-          <div><span>Plain Kurta</span><b>₹249</b></div>
-          {patchPrice>0&&<div><span>Patch Work</span><b>+ ₹{patchPrice}</b></div>}
-          {printSize&&<div><span>{printSize} DTF Print</span><b>+ ₹{printPrice}</b></div>}
-          <div className="total-row"><span>Final Total</span><b>₹{finalTotal}</b></div>
-        </div>
-        <button type="button" className="btn btn-gold cart-wa" onClick={placeOrderOnWhatsApp}>Place Order on WhatsApp <MessageCircle size={17}/></button>
-        <p className="whatsapp-note">{orderCreatedId?"Order "+orderCreatedId+" saved. ":""}{(patchImage||printImage)?"Your uploaded patch/print will be attached when your phone/browser supports WhatsApp file sharing.":"Pan-India shipping is included. Your order details will open in WhatsApp."} After placing your order, use <a href="/orders">My Orders</a> to track it.</p>
+        <div className="checkout-lines"><div><span>{cartItems.length} Kurta{cartItems.length!==1?"s":""}</span><b>₹{cartTotal}</b></div><div className="total-row"><span>Final Total</span><b>₹{cartTotal}</b></div></div>
+        <button type="button" className="btn btn-gold cart-wa" disabled={!cartItems.length} onClick={placeOrderOnWhatsApp}>Place Order on WhatsApp <MessageCircle size={17}/></button>
+        <p className="whatsapp-note">{orderCreatedId?"Order "+orderCreatedId+" saved. ":""}Your complete cart will be sent to WhatsApp. After placing your order, use <a href="/orders">My Orders</a> to track it.</p>
       </div>
     </aside></div>}
   </>;
