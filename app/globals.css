@@ -464,3 +464,21 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
   .preview-detail-row{font-size:11px;padding:7px 0}
   .preview-detail-total{font-size:15px}
 }
+
+
+/* Multi-select patch placement controls */
+.patch-placement-grid{grid-template-columns:repeat(2,1fr)}
+.patch-placement-grid .choice{min-height:68px}
+.patch-selection-note{
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:10px;
+  background:#f3eadc;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+}
+@media(max-width:560px){
+  .patch-placement-grid{grid-template-columns:repeat(2,1fr)}
+  .patch-placement-grid .choice{padding:11px 8px;min-height:64px}
+}
