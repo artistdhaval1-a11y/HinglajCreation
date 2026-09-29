@@ -23,7 +23,7 @@ const colours = [
 const kurtaCatalogImage = "https://d2ol7oe51mr4n9.cloudfront.net/user_3GaPnt7FT0FsavzgVsFIQBb4kgI/c60e2c6a-d2f9-490a-b60c-5d94e1044ca1.webp";
 const sizes = ["S","M","L","XL","XXL"];
 const addOnSizes = ["Small","Medium","Large"];
-const printPositions = ["Front","Back"];
+const printPositions = ["Front","Back","Both"];
 const patchPrices: Record<string,number> = { Small:50, Medium:100, Large:150 };
 const patchPlacementOptions = ["Left Chest","Right Chest","Sleeves","Long Front","Back Center","Multiple Small"];
 const multipleQuantities = [2,3,4,5];
@@ -67,7 +67,10 @@ export default function Home() {
     return placement;
   }).join(" + ");
   const patchOrderText=patchPlacements.length ? patchDetailsText+" / ₹"+patchPrice : "None";
-  const printPrice=printSize ? printPrices[printSize] : 0;
+  const printBasePrice=printSize ? printPrices[printSize] : 0;
+  const printPlacementCount=printPosition==="Both" ? 2 : printPosition ? 1 : 0;
+  const printPrice=printSize ? printBasePrice*(printPlacementCount||1) : 0;
+  const printDetailsText=printSize ? printSize+" / "+(printPosition||"Placement not selected")+" / ₹"+printPrice : "None";
   const total=249+patchPrice+printPrice;
   const finalTotal=total;
   const ready=!!kurtaSize && (!chestSelected || !!patchSize) && (!printSize || printSize==="Full Print" || !!printPosition);
@@ -89,7 +92,7 @@ export default function Home() {
     if(!savedOrderId){
       try{
         const patchDetails=patchOrderText;
-        const printDetails=printSize ? printSize+" / "+(printSize==="Full Print"?"Full Print":printPosition)+" / ₹"+printPrice : "None";
+        const printDetails=printDetailsText;
         const res=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
           customerName,customerPhone,shippingAddress,shippingCity,shippingState,shippingPincode,
           colour:selectedColour,size:kurtaSize,patchDetails,patchPrice,printDetails,printPrice,total,
@@ -123,7 +126,7 @@ export default function Home() {
     }
     window.open("https://wa.me/917405652991?text="+encodeURIComponent(text), "_blank");
   }
-  const orderText = "Hi Hinglaj Creation, I want to order a custom kurta. Name: "+customerName+"; Mobile: "+customerPhone+"; Address: "+shippingAddress+", "+shippingCity+", "+shippingState+" - "+shippingPincode+"; Colour: "+selectedColour+"; Size: "+kurtaSize+"; Base: ₹249; Patch: "+patchOrderText+"; Print: "+(printSize ? printSize+" / "+printPosition+" / ₹"+printPrice : "None")+"; Product Total: ₹"+total+"; Shipping: Included Pan-India; Final Total: ₹"+finalTotal;
+  const orderText = "Hi Hinglaj Creation, I want to order a custom kurta. Name: "+customerName+"; Mobile: "+customerPhone+"; Address: "+shippingAddress+", "+shippingCity+", "+shippingState+" - "+shippingPincode+"; Colour: "+selectedColour+"; Size: "+kurtaSize+"; Base: ₹249; Patch: "+patchOrderText+"; Print: "+printDetailsText+"; Product Total: ₹"+total+"; Shipping: Included Pan-India; Final Total: ₹"+finalTotal;
 
   return <>
     <header className="nav"><div className="container nav-inner">
@@ -160,9 +163,9 @@ export default function Home() {
 
             <div className="builder-card"><div className="builder-title"><span>2</span><div><h3>Patch Work <em>Optional</em></h3><p>Select one or more placements. You can combine them.</p></div></div><div className="option-label">Choose patch placement(s)</div><div className="option-grid patch-placement-grid">{patchPlacementOptions.map(option=><button key={option} className={"choice "+(patchPlacements.includes(option)?"choice-active":"")} onClick={()=>setPatchPlacements(prev=>prev.includes(option)?prev.filter(item=>item!==option):[...prev,option])}>{option}<small>{option==="Left Chest"||option==="Right Chest"?"Choose size":option==="Sleeves"?"₹100":option==="Long Front"?"₹150":option==="Back Center"?"₹150":"₹50 each"}</small></button>)}</div>{chestSelected&&<><div className="option-label">Chest patch size</div><div className="option-grid">{addOnSizes.map(s=><button key={s} className={"choice "+(patchSize===s?"choice-active":"")} onClick={()=>setPatchSize(patchSize===s?"":s)}>{s}<small>₹{patchPrices[s]} per chest</small></button>)}</div></>}{patchPlacements.includes("Multiple Small")&&<><div className="option-label">Multiple small patches</div><select className="quantity-select" value={multipleQuantity} onChange={e=>setMultipleQuantity(Number(e.target.value))}>{multipleQuantities.map(q=><option key={q} value={q}>Quantity: {q} — ₹{q*50}</option>)}</select></>}{patchPlacements.length>0&&<label className="upload-box"><span>Upload your patch</span><small>PNG/JPG · used for all selected placement(s)</small><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>filePreview(e,"patch")}/>{patchImage&&<b>✓ Patch uploaded</b>}</label>}<div className="patch-selection-note">{patchPlacements.length?"Selected: "+patchPlacements.join(" + "):"No patch selected"}</div></div>
 
-            <div className="builder-card"><div className="builder-title"><span>3</span><div><h3>DTF Print <em>Optional</em></h3><p>Small ₹50 · Medium ₹100 · Large ₹150 · Full Print ₹250.</p></div></div><div className="option-label">Print option</div><div className="option-grid">{addOnSizes.map(s=><button key={s} className={"choice "+(printSize===s?"choice-active":"")} onClick={()=>{setPrintSize(printSize===s?"":s);if(printSize===s)setPrintPosition("");}}>{s}<small>₹{printPrices[s]}</small></button>)}<button className={"choice "+(printSize==="Full Print"?"choice-active":"")} onClick={()=>{setPrintSize(printSize==="Full Print"?"":"Full Print");setPrintPosition("");}}>Full Print<small>₹250</small></button></div>{printSize&&<>{printSize!=="Full Print"&&<><div className="option-label">Print placement</div><div className="option-grid two">{printPositions.map(s=><button key={s} className={"choice "+(printPosition===s?"choice-active":"")} onClick={()=>setPrintPosition(s)}>{s}</button>)}</div></>}<label className="upload-box"><span>Upload your DTF print</span><small>PNG/JPG · transparent PNG recommended</small><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>filePreview(e,"print")}/>{printImage&&<b>✓ Print uploaded</b>}</label></>}</div>
+            <div className="builder-card"><div className="builder-title"><span>3</span><div><h3>DTF Print <em>Optional</em></h3><p>Choose your print size, then select Front, Back, or Both.</p></div></div><div className="option-label">Print size</div><div className="option-grid">{addOnSizes.map(s=><button key={s} className={"choice "+(printSize===s?"choice-active":"")} onClick={()=>{setPrintSize(printSize===s?"":s);if(printSize===s)setPrintPosition("");}}>{s}<small>₹{printPrices[s]}</small></button>)}<button className={"choice "+(printSize==="Full Print"?"choice-active":"")} onClick={()=>{setPrintSize(printSize==="Full Print"?"":"Full Print");setPrintPosition("");}}>Full Print<small>₹250</small></button></div>{printSize&&<><div className="option-label">Print placement</div><div className="option-grid two">{printPositions.map(s=><button key={s} className={"choice "+(printPosition===s?"choice-active":"")} onClick={()=>setPrintPosition(s)}>{s}<small>{s==="Both"?"2 × print price":""}</small></button>)}</div><label className="upload-box"><span>Upload your DTF print</span><small>PNG/JPG · transparent PNG recommended</small><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>filePreview(e,"print")}/>{printImage&&<b>✓ Print uploaded</b>}</label></>}</div>
 
-            <div className="builder-summary"><div><span>Plain Kurta</span><b>₹249</b></div><div><span>{selectedColour} · Size</span><b>{kurtaSize||"Not selected"}</b></div><div><span>Patch</span><b>{patchPrice?patchOrderText.replace(" / ₹"," · ₹"): "None · ₹0"}</b></div><div><span>DTF Print</span><b>{printSize?printSize+" · "+(printSize==="Full Print"?"Full Kurta":"Placement: "+printPosition)+" · ₹"+printPrice:"None · ₹0"}</b></div><div className="total-row"><span>Total</span><b>₹{total}</b></div><button className="btn btn-gold full-btn" disabled={!ready} onClick={addToCart}>{ready?"Add Custom Kurta to Cart":"Select kurta size to continue"} <ShoppingBag size={17}/></button></div>
+            <div className="builder-summary"><div><span>Plain Kurta</span><b>₹249</b></div><div><span>{selectedColour} · Size</span><b>{kurtaSize||"Not selected"}</b></div><div><span>Patch</span><b>{patchPrice?patchOrderText.replace(" / ₹"," · ₹"): "None · ₹0"}</b></div><div><span>DTF Print</span><b>{printSize?printSize+" · "+(printPosition||"Placement not selected")+" · ₹"+printPrice:"None · ₹0"}</b></div><div className="total-row"><span>Total</span><b>₹{total}</b></div><button className="btn btn-gold full-btn" disabled={!ready} onClick={addToCart}>{ready?"Add Custom Kurta to Cart":"Select kurta size to continue"} <ShoppingBag size={17}/></button></div>
           </div>
         </div>
       </div></section>
