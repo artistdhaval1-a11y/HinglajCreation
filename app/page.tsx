@@ -27,6 +27,7 @@ const printPositions = ["Front","Back","Both"];
 const patchPrices: Record<string,number> = { Small:50, Medium:100, Large:150 };
 const patchPlacementOptions = ["Left Chest","Right Chest","Sleeves","Long Front","Back Center","Multiple Small"];
 const multipleQuantities = [2,3,4,5];
+function deliveryEstimate(city:string){return city.trim().toLowerCase()==="ahmedabad"?"3-4 days":"8-10 days";}
 const printPrices: Record<string,number> = { Small:50, Medium:100, Large:150, "Full Print":250 };
 type CartItem = { colour:string; tone:string; size:string; patchDetails:string; patchPrice:number; printDetails:string; printPrice:number; total:number; patchImage:string; printImage:string };
 
@@ -92,12 +93,13 @@ export default function Home() {
     if(!cartItems.length){window.alert("Please add at least one kurta to your cart.");return;}
     if(!customerName.trim()||!/^\d{10}$/.test(customerPhone)||!shippingAddress.trim()||!shippingCity.trim()||!shippingState.trim()||!/^\d{6}$/.test(shippingPincode)){window.alert("Please complete your name, 10-digit mobile number and full delivery address.");return;}
     try{
+      const deliveryDays=deliveryEstimate(shippingCity);
       const items=cartItems.map((item,index)=>({itemNumber:index+1,colour:item.colour,size:item.size,patchDetails:item.patchDetails,patchPrice:item.patchPrice,printDetails:item.printDetails,printPrice:item.printPrice,total:item.total,patchUploaded:!!item.patchImage,printUploaded:!!item.printImage}));
       const first=cartItems[0];
-      const res=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({customerName,customerPhone,shippingAddress,shippingCity,shippingState,shippingPincode,colour:first.colour,size:first.size,patchDetails:items.map(i=>i.patchDetails).join(" | "),patchPrice:items.reduce((n,i)=>n+i.patchPrice,0),printDetails:items.map(i=>i.printDetails).join(" | "),printPrice:items.reduce((n,i)=>n+i.printPrice,0),total:cartTotal,patchUploaded:items.some(i=>i.patchUploaded),printUploaded:items.some(i=>i.printUploaded),items})});
+      const res=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({customerName,customerPhone,shippingAddress,shippingCity,shippingState,shippingPincode,deliveryDays,colour:first.colour,size:first.size,patchDetails:items.map(i=>i.patchDetails).join(" | "),patchPrice:items.reduce((n,i)=>n+i.patchPrice,0),printDetails:items.map(i=>i.printDetails).join(" | "),printPrice:items.reduce((n,i)=>n+i.printPrice,0),total:cartTotal,patchUploaded:items.some(i=>i.patchUploaded),printUploaded:items.some(i=>i.printUploaded),items})});
       const data=await res.json();if(!res.ok)throw new Error(data.error||"Could not save order.");setOrderCreatedId(data.orderId);
       const lines=cartItems.map((item,index)=>(index+1)+". "+item.colour+" Kurta · Size "+item.size+" · "+item.patchDetails+" · "+item.printDetails+" · ₹"+item.total).join("\n");
-      const text="Hi Hinglaj Creation, I want to order "+cartItems.length+" custom kurta(s).\nOrder ID: "+data.orderId+"\nName: "+customerName+"\nMobile: "+customerPhone+"\nAddress: "+shippingAddress+", "+shippingCity+", "+shippingState+" - "+shippingPincode+"\n\nItems:\n"+lines+"\n\nFinal Total: ₹"+cartTotal+"\nShipping: Included Pan-India";
+      const text="Hi Hinglaj Creation, I want to order "+cartItems.length+" custom kurta(s).\nOrder ID: "+data.orderId+"\nName: "+customerName+"\nMobile: "+customerPhone+"\nAddress: "+shippingAddress+", "+shippingCity+", "+shippingState+" - "+shippingPincode+"\n\nItems:\n"+lines+"\n\nFinal Total: ₹"+cartTotal+"\nEstimated Delivery: "+deliveryDays+"\nShipping: Included Pan-India";
       const files:File[]=[];async function dataUrlToFile(dataUrl:string,name:string){const res=await fetch(dataUrl);const blob=await res.blob();return new File([blob],name,{type:blob.type||"image/jpeg"});}
       for(let i=0;i<cartItems.length;i++){if(cartItems[i].patchImage)files.push(await dataUrlToFile(cartItems[i].patchImage,"hinglaj-patch-"+(i+1)+".jpg"));if(cartItems[i].printImage)files.push(await dataUrlToFile(cartItems[i].printImage,"hinglaj-dtf-"+(i+1)+".jpg"));}
       if(files.length&&typeof navigator!=="undefined"&&"share" in navigator&&"canShare" in navigator&&navigator.canShare({files})){await navigator.share({title:"Hinglaj Creation Order",text,files});return;}window.open("https://wa.me/917405652991?text="+encodeURIComponent(text),"_blank");
@@ -178,7 +180,7 @@ export default function Home() {
           <textarea value={shippingAddress} onChange={e=>setShippingAddress(e.target.value)} placeholder="Full Delivery Address" rows={3} autoComplete="street-address"/>
           <div className="shipping-form-grid"><input value={shippingCity} onChange={e=>setShippingCity(e.target.value)} placeholder="City" autoComplete="address-level2"/><input value={shippingState} onChange={e=>setShippingState(e.target.value)} placeholder="State" autoComplete="address-level1"/></div>
           <input value={shippingPincode} onChange={e=>setShippingPincode(e.target.value.replace(/D/g,"").slice(0,6))} placeholder="Pincode" inputMode="numeric" autoComplete="postal-code"/>
-          <div className="shipping-included-badge">✓ Pan-India shipping included in the kurta price</div>
+          <div className="shipping-included-badge">✓ Pan-India shipping included in the kurta price</div><div className="delivery-estimate">🚚 Estimated delivery: <strong>{shippingCity.trim()?deliveryEstimate(shippingCity):"3-4 days in Ahmedabad · 8-10 days elsewhere"}</strong></div>
         </div>
         <div className="checkout-lines"><div><span>{cartItems.length} Kurta{cartItems.length!==1?"s":""}</span><b>₹{cartTotal}</b></div><div className="total-row"><span>Final Total</span><b>₹{cartTotal}</b></div></div>
         <button type="button" className="btn btn-gold cart-wa" disabled={!cartItems.length} onClick={placeOrderOnWhatsApp}>Place Order on WhatsApp <MessageCircle size={17}/></button>
