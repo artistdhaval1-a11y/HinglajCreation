@@ -137,7 +137,7 @@ export default function Home() {
         <div className="section-head"><div><span className="eyebrow">Step 01</span><h2>Choose Your Plain Kurta</h2><p>Every custom order starts at <strong>₹249</strong>. Select one colour below, then continue to size and customisation.</p></div></div>
         <div className="colour-picker-card">
           <div className="colour-collage" role="group" aria-label="Choose kurta colour">
-            {colours.map(([name,tone])=><button key={name} className={"colour-tile "+(selectedColour===name?"colour-tile-active":"")} onClick={()=>{setSelectedColour(name);setSelectedTone(tone);setCustomiseOpen(true);}} aria-label={"Select "+name+" kurta"}>{colourImages[name]?<img className="colour-tile-image" src={colourImages[name]} alt={name+" kurta"}/>:<span className="colour-swatch" style={{background:tone}}/>}<span className="colour-tile-label">{name}</span></button>)}</div>
+            {colours.map(([name,tone])=><button key={name} className={"colour-tile "+(selectedColour===name?"colour-tile-active":"")} onClick={()=>{setSelectedColour(name);setSelectedTone(tone);setCustomiseOpen(true);}} aria-label={"Select "+name+" kurta"}><span className="colour-swatch" style={{background:tone}}/><span className="colour-tile-label">{name}</span></button>)}</div>
           <div className="colour-picker-info">
             <div><span className="eyebrow">Selected Colour</span><h3>{selectedColour}</h3><p>Plain kurta · ₹249 · Sizes S–XXL</p></div>
             
