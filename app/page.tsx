@@ -19,13 +19,11 @@ const colours = [
   ["Olive Green","#526044"],
   ["Lavender","#b9a9cf"],
   ["Purple","#70458f"],
-  ["Brown","#6b3f2a"],
   ["Dark Green","#075b45"],
   ["Light Green","#5fce2f"],
   ["Light Yellow","#fff0a6"]
 ];
 const colourImages: Record<string,string> = {
-  "Brown": "/products/brown-kurta.webp",
   "Dark Green": "/products/dark-green-kurta.webp",
   "Light Green": "/products/light-green-kurta.webp",
   "Light Yellow": "/products/light-yellow-kurta.webp"
