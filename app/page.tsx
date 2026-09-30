@@ -85,7 +85,7 @@ export default function Home() {
     reader.onload=()=>type==="patch"?setPatchImage(String(reader.result)):setPrintImage(String(reader.result));
     reader.readAsDataURL(file);
   }
-  function addToCart(){if(!ready){window.alert("Please select a kurta size and complete the required customization selections.");return;} const item:CartItem={colour:selectedColour,tone:selectedTone,size:kurtaSize,patchDetails:patchOrderText,patchPrice,printDetails:printDetailsText,printPrice,total,patchImage,printImage}; setCartItems(prev=>[...prev,item]); setAdded(true); setOrderCreatedId("");}
+  function addToCart(){if(!ready){window.alert("Please select a kurta size and complete the required customization selections.");return;} const item:CartItem={colour:selectedColour,tone:selectedTone,size:kurtaSize,patchDetails:patchOrderText,patchPrice,printDetails:printDetailsText,printPrice,total,patchImage,printImage}; setCartItems(prev=>[...prev,item]); setAdded(true); setCustomiseOpen(false); setOrderCreatedId(""); window.setTimeout(()=>{setAdded(false);window.scrollTo({top:0,behavior:"smooth"});},1800);}
   function removeCartItem(index:number){setCartItems(prev=>prev.filter((_,i)=>i!==index));}
   function continueShopping(){setCartOpen(false);}
   async function placeOrderOnWhatsApp(){
