@@ -85,7 +85,7 @@ export default function Home() {
     reader.onload=()=>type==="patch"?setPatchImage(String(reader.result)):setPrintImage(String(reader.result));
     reader.readAsDataURL(file);
   }
-  function addToCart(){if(!ready){window.alert("Please select a kurta size and complete the required customization selections.");return;} const item:CartItem={colour:selectedColour,tone:selectedTone,size:kurtaSize,patchDetails:patchOrderText,patchPrice,printDetails:printDetailsText,printPrice,total,patchImage,printImage}; setCartItems(prev=>[...prev,item]); setAdded(true); setOrderCreatedId(""); setCartOpen(true);}
+  function addToCart(){if(!ready){window.alert("Please select a kurta size and complete the required customization selections.");return;} const item:CartItem={colour:selectedColour,tone:selectedTone,size:kurtaSize,patchDetails:patchOrderText,patchPrice,printDetails:printDetailsText,printPrice,total,patchImage,printImage}; setCartItems(prev=>[...prev,item]); setAdded(true); setOrderCreatedId("");}
   function removeCartItem(index:number){setCartItems(prev=>prev.filter((_,i)=>i!==index));}
   function continueShopping(){setCartOpen(false);}
   async function placeOrderOnWhatsApp(){
@@ -103,9 +103,9 @@ export default function Home() {
       if(files.length&&typeof navigator!=="undefined"&&"share" in navigator&&"canShare" in navigator&&navigator.canShare({files})){await navigator.share({title:"Hinglaj Creation Order",text,files});return;}window.open("https://wa.me/917405652991?text="+encodeURIComponent(text),"_blank");
     }catch(error){window.alert(error instanceof Error?error.message:"Could not save the order. Please try again.");}
   }
-  const orderText = "Hi Hinglaj Creation, cart has "+cartItems.length+" kurta(s). Final Total: ₹"+cartTotal;
+  const orderText = "Hi Hinglaj Creation, cart has "+cartItems.length+" kurta(s). Final Total: ₹"+cartTotal;\n  const addedPopup = added ? <div className="added-cart-popup" role="status"><div className="added-cart-popup-card"><span className="added-cart-check">✓</span><div><strong>Added to Cart</strong><small>{selectedColour} Kurta · Size {kurtaSize}</small></div><button onClick={()=>setAdded(false)} aria-label="Close">×</button></div></div> : null;
 
-  return <>
+  return <>\n    {addedPopup}
     <header className="nav"><div className="container nav-inner">
       <a className="logo-image" href="#"><img src="/hinglaj-logo.svg" alt="Hinglaj Creation"/></a>
       <nav className={"nav-links "+(menuOpen?"nav-links-open":"")}><a href="#shop" onClick={()=>setMenuOpen(false)}>Shop</a><a href="#customise" onClick={()=>setMenuOpen(false)}>Customise</a><a href="#how" onClick={()=>setMenuOpen(false)}>How It Works</a><a href="/orders" onClick={()=>setMenuOpen(false)}>My Orders</a><a href="#contact" onClick={()=>setMenuOpen(false)}>Contact</a></nav>
