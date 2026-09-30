@@ -24,7 +24,7 @@ const colours = [
   ["Light Yellow","#fff0a6"]
 ];
 const colourImages: Record<string,string> = {};
-const kurtaCatalogImage = "/kurta-colour-sprite.svg";
+const kurtaCatalogImage = "/kurta-colour-sprite.webp";
 const sizes = ["S","M","L","XL","XXL"];
 const addOnSizes = ["Small","Medium","Large"];
 const printPositions = ["Front","Back","Both"];
