@@ -685,7 +685,7 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 /* Final kurta preview: render the real 5x4 catalogue photo as an oversized image and crop one cell. */
 .preview-stage{width:100%;display:flex;justify-content:center;align-items:center;padding:0!important;}
 .preview-photo{position:relative;width:min(360px,100%);height:auto!important;aspect-ratio:1052/1495!important;max-height:none!important;margin:0 auto;border-radius:14px;overflow:hidden;background:#f5f2ea;}
-.preview-kurta-image{position:absolute;left:0;top:0;display:block;width:500%!important;height:400%!important;max-width:none!important;object-fit:fill;transform-origin:top left;}
+.preview-kurta-image{position:absolute;left:0;top:0;display:block;width:500%!important;height:300%!important;max-width:none!important;object-fit:fill;transform-origin:top left;}
 @media(max-width:560px){
   .preview-stage{height:auto!important;min-height:0!important;}
   .preview-photo{width:min(320px,92vw);aspect-ratio:1052/1495!important;height:auto!important;}
