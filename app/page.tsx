@@ -32,20 +32,12 @@ const multipleQuantities = [2,3,4,5];
 function deliveryEstimate(city:string){return city.trim().toLowerCase()==="ahmedabad"?"3-4 days":"8-10 days";}
 const printPrices: Record<string,number> = { Small:50, Medium:100, Large:150, "Full Print":250 };
 
-function KurtaIllustration({color}:{color:string}){
-  return <svg className="kurta-illustration" viewBox="0 0 360 520" role="img" aria-label={color+" kurta preview"}>
-    <defs><linearGradient id="kurtaShade" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stopColor={color}/><stop offset="0.55" stopColor={color}/><stop offset="1" stopColor="#111" stopOpacity="0.16"/></linearGradient></defs>
-    <ellipse cx="180" cy="490" rx="112" ry="14" fill="#000" opacity="0.12"/>
-    <path d="M128 74 L94 91 Q72 103 60 135 L42 192 Q38 207 50 215 L82 232 L103 184 L103 451 Q103 468 120 472 L240 472 Q257 468 257 451 L257 184 L278 232 L310 215 Q322 207 318 192 L300 135 Q288 103 266 91 L232 74 Z" fill="url(#kurtaShade)" stroke="#222" strokeOpacity="0.18" strokeWidth="3"/>
-    <path d="M128 74 Q180 112 232 74 L218 58 Q180 42 142 58 Z" fill={color} stroke="#222" strokeOpacity="0.18" strokeWidth="3"/>
-    <path d="M153 72 L207 72 L198 155 Q180 171 162 155 Z" fill="#fff" opacity="0.18"/>
-    <path d="M180 94 L180 310" stroke="#fff" strokeOpacity="0.34" strokeWidth="3"/>
-    <circle cx="180" cy="125" r="4" fill="#fff" opacity="0.85"/><circle cx="180" cy="151" r="4" fill="#fff" opacity="0.85"/><circle cx="180" cy="177" r="4" fill="#fff" opacity="0.85"/>
-    <path d="M103 184 L122 205 L122 451" fill="none" stroke="#fff" strokeOpacity="0.16" strokeWidth="5"/>
-    <path d="M257 184 L238 205 L238 451" fill="none" stroke="#000" strokeOpacity="0.14" strokeWidth="5"/>
-    <path d="M102 451 Q180 466 258 451" fill="none" stroke="#fff" strokeOpacity="0.3" strokeWidth="3"/>
-  </svg>;
-}
+const colourImages: Record<string,string> = {
+  "Dark Green": "/products/dark-green-kurta.webp",
+  "Light Green": "/products/light-green-kurta.webp",
+  "Light Yellow": "/products/light-yellow-kurta.webp"
+};
+const kurtaCatalogImage = "https://d2ol7oe51mr4n9.cloudfront.net/user_3GaPnt7FT0FsavzgVsFIQBb4kgI/c60e2c6a-d2f9-490a-b60c-5d94e1044ca1.webp";
 
 type CartItem = { colour:string; tone:string; size:string; patchDetails:string; patchPrice:number; printDetails:string; printPrice:number; total:number; patchImage:string; printImage:string };
 
@@ -72,6 +64,10 @@ export default function Home() {
   const [added,setAdded]=useState(false);
   const [cartItems,setCartItems]=useState<CartItem[]>([]);
   const [orderCreatedId,setOrderCreatedId]=useState("");
+  const selectedColourIndex=colours.findIndex(([name])=>name===selectedColour);
+  const selectedSpriteRow=Math.floor(selectedColourIndex/5);
+  const selectedSpritePosition={backgroundPosition:`${(selectedColourIndex%5)*25}% ${selectedSpriteRow*(100/3)}%`};
+  const selectedColourImage=colourImages[selectedColour];
   const chestSelected=patchPlacements.includes("Left Chest") || patchPlacements.includes("Right Chest");
   const patchPrice=patchPlacements.reduce((sum,placement)=>{
     if(placement==="Left Chest" || placement==="Right Chest") return sum+(patchSize ? patchPrices[patchSize] : 0);
@@ -153,7 +149,7 @@ export default function Home() {
       <section className={"section customise-section customise-wizard "+(customiseOpen?"customise-wizard-open":"")} id="customise"><div className="customise-wizard-backdrop" onClick={()=>setCustomiseOpen(false)}></div><div className="customise-wizard-panel"><div className="customise-wizard-top"><button className="customise-back-btn" onClick={()=>setCustomiseOpen(false)}><ArrowRight size={17} style={{transform:"rotate(180deg)"}}/> Back to colours</button><span>Step 02 of 02</span></div><div className="container">
         <div className="section-head"><div><span className="eyebrow">Step 02</span><h2>Customize Your Kurta</h2><p>Base: <strong>{selectedColour}</strong> · Plain kurta ₹249</p></div></div>
         <div className="builder">
-          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo"><KurtaIllustration color={selectedTone}/></div></div><div className="preview-colour"><span className="colour-dot" style={{background:selectedTone}}/> {selectedColour} · Size {kurtaSize||"—"}</div><div className="preview-product-details"><div className="preview-product-heading"><span>PRODUCT DETAILS</span><b>Custom Men&apos;s Kurta</b></div><div className="preview-detail-row"><span>Colour</span><b>{selectedColour}</b></div><div className="preview-detail-row"><span>Size</span><b>{kurtaSize||"Not selected"}</b></div><div className="preview-detail-row"><span>Plain Kurta</span><b>₹249</b></div><div className="preview-detail-row"><span>Patch Work</span><b>{patchPrice?`₹${patchPrice}`:"None · ₹0"}</b></div><div className="preview-detail-row"><span>DTF Print</span><b>{printSize?`${printSize} · ₹${printPrice}`:"None · ₹0"}</b></div><div className="preview-detail-total"><span>Total</span><b>₹{total}</b></div></div></aside>
+          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo">{selectedColourImage?<img className="preview-kurta-image" src={`${selectedColourImage}?v=5`} alt={`${selectedColour} kurta preview`} loading="eager" decoding="async"/>:<div className="preview-kurta-sprite" style={{backgroundImage:`url(${kurtaCatalogImage})`,backgroundSize:"500% 400%",backgroundPosition:selectedSpritePosition.backgroundPosition}}/>}</div></div><div className="preview-colour"><span className="colour-dot" style={{background:selectedTone}}/> {selectedColour} · Size {kurtaSize||"—"}</div><div className="preview-product-details"><div className="preview-product-heading"><span>PRODUCT DETAILS</span><b>Custom Men&apos;s Kurta</b></div><div className="preview-detail-row"><span>Colour</span><b>{selectedColour}</b></div><div className="preview-detail-row"><span>Size</span><b>{kurtaSize||"Not selected"}</b></div><div className="preview-detail-row"><span>Plain Kurta</span><b>₹249</b></div><div className="preview-detail-row"><span>Patch Work</span><b>{patchPrice?`₹${patchPrice}`:"None · ₹0"}</b></div><div className="preview-detail-row"><span>DTF Print</span><b>{printSize?`${printSize} · ₹${printPrice}`:"None · ₹0"}</b></div><div className="preview-detail-total"><span>Total</span><b>₹{total}</b></div></div></aside>
 
           <div className="builder-options">
             <div className="builder-card"><div className="builder-title"><span>1</span><div><h3>Kurta Size</h3><p>Choose your fitting size.</p></div></div><div className="option-grid kurta-size-grid">{sizes.map(s=><button key={s} className={"choice "+(kurtaSize===s?"choice-active":"")} onClick={()=>setKurtaSize(s)}>{s}</button>)}</div></div>
@@ -187,7 +183,7 @@ export default function Home() {
     {cartOpen&&<div className="drawer-backdrop" onClick={()=>setCartOpen(false)}><aside className="cart-drawer" onClick={e=>e.stopPropagation()}>
       <div className="drawer-head"><h3>Your Cart ({cartItems.length})</h3><button className="icon-btn" onClick={()=>setCartOpen(false)}><X size={18}/></button></div>
       <div className="checkout-summary">
-        {cartItems.map((item,index)=><div className="checkout-product-card cart-item-card" key={index}><div className="checkout-product-photo"><KurtaIllustration color={item.tone}/></div><div className="checkout-product-info"><b>{index+1}. {item.colour} Custom Kurta</b><p>Size: {item.size}<br/>Patch: {item.patchDetails.replace(" / ₹"+item.patchPrice,"")}<br/>Print: {item.printDetails.replace(" / ₹"+item.printPrice,"")}</p><strong>₹{item.total}</strong><button className="cart-remove" onClick={()=>removeCartItem(index)}>Remove</button></div></div>)}
+        {cartItems.map((item,index)=><div className="checkout-product-card cart-item-card" key={index}><div className="checkout-product-photo" style={colourImages[item.colour]?{backgroundImage:`url(${colourImages[item.colour]})`,backgroundSize:"cover",backgroundPosition:"center"}:{backgroundImage:`url(${kurtaCatalogImage})`,backgroundSize:"500% 400%",backgroundPosition:`${(colours.findIndex(([name])=>name===item.colour)%5)*25}% ${Math.floor(colours.findIndex(([name])=>name===item.colour)/5)*(100/3)}%`}}/><div className="checkout-product-info"><b>{index+1}. {item.colour} Custom Kurta</b><p>Size: {item.size}<br/>Patch: {item.patchDetails.replace(" / ₹"+item.patchPrice,"")}<br/>Print: {item.printDetails.replace(" / ₹"+item.printPrice,"")}</p><strong>₹{item.total}</strong><button className="cart-remove" onClick={()=>removeCartItem(index)}>Remove</button></div></div>)}
         {!cartItems.length&&<p className="cart-empty">Your cart is empty.</p>}
         {cartItems.length>0&&<button type="button" className="btn btn-light full-btn" onClick={continueShopping}>+ Add Another Kurta</button>}
         <div className="shipping-form shipping-included"><div className="shipping-form-title">Delivery Details</div>
