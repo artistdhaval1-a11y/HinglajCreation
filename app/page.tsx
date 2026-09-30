@@ -114,17 +114,17 @@ export default function Home() {
     <main>
       <section className="hero hero-custom"><div className="container"><div className="hero-grid">
         <div className="hero-copy"><span className="eyebrow">Hinglaj Custom Studio</span><h1>Start with a<br/>plain kurta.</h1><p>Choose your base colour and size, then add your own patch, DTF print, or both. Upload your artwork and preview it on the kurta.</p><div className="btn-row"><a className="btn btn-gold" href="#shop">Choose Your Kurta <ArrowRight size={17}/></a><a className="btn btn-light" href="#how">How it works</a></div><div className="trust-row"><span><Check size={15}/> ₹249 plain kurta</span><span><Check size={15}/> Custom uploads</span><span><Check size={15}/> S–XXL</span></div></div>
-        <div className="hero-art"><img className="hero-photo" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3GaPnt7FT0FsavzgVsFIQBb4kgI/272c73e9-cad2-4a4d-88d7-64d64e4f5698.png" alt="Hinglaj Creation custom kurta collection"/><div className="hero-badge">CUSTOM<br/><span>YOUR WAY</span></div><div className="hero-caption">PLAIN · PATCH · PRINT</div></div>
+        <div className="hero-art"><img className="hero-photo" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3GaPnt7FT0FsavzgVsFIQBb4kgI/272c73e9-cad2-4a4d-88d7-64d64e4f5698.png" alt="Hinglaj Creation custom kurta collection"/><div className="hero-caption">PLAIN · PATCH · PRINT</div></div>
       </div></div></section>
 
       <section className="section shop-section" id="shop"><div className="container">
         <div className="section-head"><div><span className="eyebrow">Step 01</span><h2>Choose Your Plain Kurta</h2><p>Every custom order starts at <strong>₹249</strong>. Select one colour below, then continue to size and customisation.</p></div></div>
         <div className="colour-picker-card">
           <div className="colour-collage" role="group" aria-label="Choose kurta colour">
-            {colours.map(([name,tone])=><button key={name} className={"colour-tile "+(selectedColour===name?"colour-tile-active":"")} onClick={()=>{setSelectedColour(name);setSelectedTone(tone);}} aria-label={"Select "+name+" kurta"}><span className="colour-swatch" style={{background:tone}}/><span className="colour-tile-label">{name}</span></button>)}</div>
+            {colours.map(([name,tone])=><button key={name} className={"colour-tile "+(selectedColour===name?"colour-tile-active":"")} onClick={()=>{setSelectedColour(name);setSelectedTone(tone);window.setTimeout(()=>document.getElementById("customise")?.scrollIntoView({behavior:"smooth"}),50);}} aria-label={"Select "+name+" kurta"}><span className="colour-swatch" style={{background:tone}}/><span className="colour-tile-label">{name}</span></button>)}</div>
           <div className="colour-picker-info">
             <div><span className="eyebrow">Selected Colour</span><h3>{selectedColour}</h3><p>Plain kurta · ₹249 · Sizes S–XXL</p></div>
-            <button className="btn btn-gold" onClick={()=>document.getElementById("customise")?.scrollIntoView({behavior:"smooth"})}>Continue with {selectedColour} <ArrowRight size={17}/></button>
+            
           </div>
         </div>
       </div></section>
