@@ -59,7 +59,8 @@ export default function Home() {
   const [cartItems,setCartItems]=useState<CartItem[]>([]);
   const [orderCreatedId,setOrderCreatedId]=useState("");
   const selectedColourIndex=colours.findIndex(([name])=>name===selectedColour);
-  const selectedSpriteRow=Math.floor(selectedColourIndex/5);\n  const selectedSpritePosition={backgroundPosition:`${(selectedColourIndex%5)*25}% ${selectedSpriteRow*(100/3)}%`};
+  const selectedSpriteRow=Math.floor(selectedColourIndex/5);
+  const selectedSpritePosition={backgroundPosition:`${(selectedColourIndex%5)*25}% ${selectedSpriteRow*(100/3)}%`};
   const selectedColourImage = colourImages[selectedColour];
   const chestSelected=patchPlacements.includes("Left Chest") || patchPlacements.includes("Right Chest");
   const patchPrice=patchPlacements.reduce((sum,placement)=>{
