@@ -32,7 +32,7 @@ const multipleQuantities = [2,3,4,5];
 function deliveryEstimate(city:string){return city.trim().toLowerCase()==="ahmedabad"?"3-4 days":"8-10 days";}
 const printPrices: Record<string,number> = { Small:50, Medium:100, Large:150, "Full Print":250 };
 
-const kurtaCatalogImage = "https://d2ol7oe51mr4n9.cloudfront.net/user_3GaPnt7FT0FsavzgVsFIQBb4kgI/c60e2c6a-d2f9-490a-b60c-5d94e1044ca1.webp";
+const kurtaCatalogImage = "/kurta-exact-sprite.webp";
 
 type CartItem = { colour:string; tone:string; size:string; patchDetails:string; patchPrice:number; printDetails:string; printPrice:number; total:number; patchImage:string; printImage:string };
 
