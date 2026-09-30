@@ -18,8 +18,18 @@ const colours = [
   ["Black","#222222"],
   ["Olive Green","#526044"],
   ["Lavender","#b9a9cf"],
-  ["Purple","#70458f"]
+  ["Purple","#70458f"],
+  ["Brown","#6b3f2a"],
+  ["Dark Green","#075b45"],
+  ["Light Green","#5fce2f"],
+  ["Light Yellow","#fff0a6"]
 ];
+const colourImages: Record<string,string> = {
+  "Brown": "/products/brown-kurta.webp",
+  "Dark Green": "/products/dark-green-kurta.webp",
+  "Light Green": "/products/light-green-kurta.webp",
+  "Light Yellow": "/products/light-yellow-kurta.webp"
+};
 const kurtaCatalogImage = "https://d2ol7oe51mr4n9.cloudfront.net/user_3GaPnt7FT0FsavzgVsFIQBb4kgI/c60e2c6a-d2f9-490a-b60c-5d94e1044ca1.webp";
 const sizes = ["S","M","L","XL","XXL"];
 const addOnSizes = ["Small","Medium","Large"];
@@ -56,6 +66,7 @@ export default function Home() {
   const [orderCreatedId,setOrderCreatedId]=useState("");
   const selectedColourIndex=colours.findIndex(([name])=>name===selectedColour);
   const selectedSpritePosition={backgroundPosition:`${(selectedColourIndex%5)*25}% ${Math.floor(selectedColourIndex/5)*50}%`};
+  const selectedColourImage = colourImages[selectedColour];
   const chestSelected=patchPlacements.includes("Left Chest") || patchPlacements.includes("Right Chest");
   const patchPrice=patchPlacements.reduce((sum,placement)=>{
     if(placement==="Left Chest" || placement==="Right Chest") return sum+(patchSize ? patchPrices[patchSize] : 0);
@@ -126,7 +137,7 @@ export default function Home() {
         <div className="section-head"><div><span className="eyebrow">Step 01</span><h2>Choose Your Plain Kurta</h2><p>Every custom order starts at <strong>₹249</strong>. Select one colour below, then continue to size and customisation.</p></div></div>
         <div className="colour-picker-card">
           <div className="colour-collage" role="group" aria-label="Choose kurta colour">
-            {colours.map(([name,tone])=><button key={name} className={"colour-tile "+(selectedColour===name?"colour-tile-active":"")} onClick={()=>{setSelectedColour(name);setSelectedTone(tone);setCustomiseOpen(true);}} aria-label={"Select "+name+" kurta"}><span className="colour-swatch" style={{background:tone}}/><span className="colour-tile-label">{name}</span></button>)}</div>
+            {colours.map(([name,tone])=><button key={name} className={"colour-tile "+(selectedColour===name?"colour-tile-active":"")} onClick={()=>{setSelectedColour(name);setSelectedTone(tone);setCustomiseOpen(true);}} aria-label={"Select "+name+" kurta"}>{colourImages[name]?<img className="colour-tile-image" src={colourImages[name]} alt={name+" kurta"}/>:<span className="colour-swatch" style={{background:tone}}/>}<span className="colour-tile-label">{name}</span></button>)}</div>
           <div className="colour-picker-info">
             <div><span className="eyebrow">Selected Colour</span><h3>{selectedColour}</h3><p>Plain kurta · ₹249 · Sizes S–XXL</p></div>
             
@@ -137,7 +148,7 @@ export default function Home() {
       <section className={"section customise-section customise-wizard "+(customiseOpen?"customise-wizard-open":"")} id="customise"><div className="customise-wizard-backdrop" onClick={()=>setCustomiseOpen(false)}></div><div className="customise-wizard-panel"><div className="customise-wizard-top"><button className="customise-back-btn" onClick={()=>setCustomiseOpen(false)}><ArrowRight size={17} style={{transform:"rotate(180deg)"}}/> Back to colours</button><span>Step 02 of 02</span></div><div className="container">
         <div className="section-head"><div><span className="eyebrow">Step 02</span><h2>Customize Your Kurta</h2><p>Base: <strong>{selectedColour}</strong> · Plain kurta ₹249</p></div></div>
         <div className="builder">
-          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo" style={{backgroundImage:`url(${kurtaCatalogImage})`,backgroundSize:"500% 300%",backgroundPosition:selectedSpritePosition.backgroundPosition}}></div></div><div className="preview-colour"><span className="colour-dot" style={{background:selectedTone}}/> {selectedColour} · Size {kurtaSize||"—"}</div><div className="preview-product-details"><div className="preview-product-heading"><span>PRODUCT DETAILS</span><b>Custom Men&apos;s Kurta</b></div><div className="preview-detail-row"><span>Colour</span><b>{selectedColour}</b></div><div className="preview-detail-row"><span>Size</span><b>{kurtaSize||"Not selected"}</b></div><div className="preview-detail-row"><span>Plain Kurta</span><b>₹249</b></div><div className="preview-detail-row"><span>Patch Work</span><b>{patchPrice?`₹${patchPrice}`:"None · ₹0"}</b></div><div className="preview-detail-row"><span>DTF Print</span><b>{printSize?`${printSize} · ₹${printPrice}`:"None · ₹0"}</b></div><div className="preview-detail-total"><span>Total</span><b>₹{total}</b></div></div></aside>
+          <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo" style={selectedColourImage?{backgroundImage:`url(${selectedColourImage})`,backgroundSize:"cover",backgroundPosition:"center"}:{backgroundImage:`url(${kurtaCatalogImage})`,backgroundSize:"500% 300%",backgroundPosition:selectedSpritePosition.backgroundPosition}}></div></div><div className="preview-colour"><span className="colour-dot" style={{background:selectedTone}}/> {selectedColour} · Size {kurtaSize||"—"}</div><div className="preview-product-details"><div className="preview-product-heading"><span>PRODUCT DETAILS</span><b>Custom Men&apos;s Kurta</b></div><div className="preview-detail-row"><span>Colour</span><b>{selectedColour}</b></div><div className="preview-detail-row"><span>Size</span><b>{kurtaSize||"Not selected"}</b></div><div className="preview-detail-row"><span>Plain Kurta</span><b>₹249</b></div><div className="preview-detail-row"><span>Patch Work</span><b>{patchPrice?`₹${patchPrice}`:"None · ₹0"}</b></div><div className="preview-detail-row"><span>DTF Print</span><b>{printSize?`${printSize} · ₹${printPrice}`:"None · ₹0"}</b></div><div className="preview-detail-total"><span>Total</span><b>₹{total}</b></div></div></aside>
 
           <div className="builder-options">
             <div className="builder-card"><div className="builder-title"><span>1</span><div><h3>Kurta Size</h3><p>Choose your fitting size.</p></div></div><div className="option-grid kurta-size-grid">{sizes.map(s=><button key={s} className={"choice "+(kurtaSize===s?"choice-active":"")} onClick={()=>setKurtaSize(s)}>{s}</button>)}</div></div>
@@ -155,7 +166,7 @@ export default function Home() {
   <div className="section-head"><div><span className="eyebrow">Product Details</span><h2>Build Your Kurta Your Way</h2><p>A men's long kurta designed as the perfect base for your own patch, DTF print, or combination.</p></div></div>
   <div className="brochure-download-wrap"><a className="btn btn-gold brochure-download" href="/Hinglaj%20Creation%20Catalogue-1.pdf" download="Hinglaj-Creation-Brochure.pdf">Download Brochure <span>↓</span></a><p>Download our Hinglaj Creation kurta catalogue.</p></div>
   <div className="product-details-grid">
-    <div className="product-detail-card"><span className="product-detail-icon">👕</span><h3>Kurta Details</h3><ul><li>Men's long kurta</li><li>Sizes S, M, L, XL & XXL</li><li>15 colour options</li><li>Plain kurta starting at ₹249</li><li>Designed for custom patch & DTF printing</li><li>Pan-India shipping included</li></ul></div>
+    <div className="product-detail-card"><span className="product-detail-icon">👕</span><h3>Kurta Details</h3><ul><li>Men's long kurta</li><li>Sizes S, M, L, XL & XXL</li><li>19 colour options</li><li>Plain kurta starting at ₹249</li><li>Designed for custom patch & DTF printing</li><li>Pan-India shipping included</li></ul></div>
     <div className="product-detail-card"><span className="product-detail-icon">✦</span><h3>Patch Work</h3><ul><li>Left Chest — Small / Medium / Large</li><li>Right Chest — Small / Medium / Large</li><li>Sleeves — ₹100</li><li>Long Front — ₹150</li><li>Back Center — ₹150</li><li>Multiple Small — ₹50 each</li><li>Multiple placements can be combined</li></ul></div>
     <div className="product-detail-card"><span className="product-detail-icon">✦</span><h3>DTF Printing</h3><ul><li>Small — ₹50</li><li>Medium — ₹100</li><li>Large — ₹150</li><li>Full Print — ₹250</li><li>Front / Back / Both placement available</li><li>Both placement is charged for two prints</li><li>Transparent PNG recommended</li></ul></div>
     <div className="product-detail-card"><span className="product-detail-icon">✓</span><h3>How Your Order Works</h3><ol><li>Select colour and size.</li><li>Choose one or more patch placements.</li><li>Upload your patch artwork.</li><li>Add a DTF print if required.</li><li>Upload your print artwork.</li><li>Review your customization and total.</li><li>Place your order through WhatsApp.</li></ol></div>
@@ -171,7 +182,7 @@ export default function Home() {
     {cartOpen&&<div className="drawer-backdrop" onClick={()=>setCartOpen(false)}><aside className="cart-drawer" onClick={e=>e.stopPropagation()}>
       <div className="drawer-head"><h3>Your Cart ({cartItems.length})</h3><button className="icon-btn" onClick={()=>setCartOpen(false)}><X size={18}/></button></div>
       <div className="checkout-summary">
-        {cartItems.map((item,index)=><div className="checkout-product-card cart-item-card" key={index}><div className="checkout-product-photo" style={{backgroundImage:`url(${kurtaCatalogImage})`,backgroundSize:"500% 300%",backgroundPosition:`${(colours.findIndex(([name])=>name===item.colour)%5)*25}% ${Math.floor(colours.findIndex(([name])=>name===item.colour)/5)*50}%`}}/><div className="checkout-product-info"><b>{index+1}. {item.colour} Custom Kurta</b><p>Size: {item.size}<br/>Patch: {item.patchDetails.replace(" / ₹"+item.patchPrice,"")}<br/>Print: {item.printDetails.replace(" / ₹"+item.printPrice,"")}</p><strong>₹{item.total}</strong><button className="cart-remove" onClick={()=>removeCartItem(index)}>Remove</button></div></div>)}
+        {cartItems.map((item,index)=><div className="checkout-product-card cart-item-card" key={index}><div className="checkout-product-photo" style={colourImages[item.colour]?{backgroundImage:`url(${colourImages[item.colour]})`,backgroundSize:"cover",backgroundPosition:"center"}:{backgroundImage:`url(${kurtaCatalogImage})`,backgroundSize:"500% 300%",backgroundPosition:`${(colours.findIndex(([name])=>name===item.colour)%5)*25}% ${Math.floor(colours.findIndex(([name])=>name===item.colour)/5)*50}%`}}/><div className="checkout-product-info"><b>{index+1}. {item.colour} Custom Kurta</b><p>Size: {item.size}<br/>Patch: {item.patchDetails.replace(" / ₹"+item.patchPrice,"")}<br/>Print: {item.printDetails.replace(" / ₹"+item.printPrice,"")}</p><strong>₹{item.total}</strong><button className="cart-remove" onClick={()=>removeCartItem(index)}>Remove</button></div></div>)}
         {!cartItems.length&&<p className="cart-empty">Your cart is empty.</p>}
         {cartItems.length>0&&<button type="button" className="btn btn-light full-btn" onClick={continueShopping}>+ Add Another Kurta</button>}
         <div className="shipping-form shipping-included"><div className="shipping-form-title">Delivery Details</div>
