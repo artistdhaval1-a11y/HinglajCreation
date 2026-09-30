@@ -32,7 +32,7 @@ const multipleQuantities = [2,3,4,5];
 function deliveryEstimate(city:string){return city.trim().toLowerCase()==="ahmedabad"?"3-4 days":"8-10 days";}
 const printPrices: Record<string,number> = { Small:50, Medium:100, Large:150, "Full Print":250 };
 
-const kurtaCatalogImage = "/kurta-exact-sprite.webp";
+const kurtaCatalogImage = "/kurta-colour-sprite.svg";
 
 type CartItem = { colour:string; tone:string; size:string; patchDetails:string; patchPrice:number; printDetails:string; printPrice:number; total:number; patchImage:string; printImage:string };
 
@@ -60,9 +60,10 @@ export default function Home() {
   const [cartItems,setCartItems]=useState<CartItem[]>([]);
   const [orderCreatedId,setOrderCreatedId]=useState("");
   const selectedColourIndex=colours.findIndex(([name])=>name===selectedColour);
-  const selectedSpriteColumn=selectedColourIndex%5;
-  const selectedSpriteRow=Math.floor(selectedColourIndex/5);
-  const selectedSpriteTransform={transform:`translate(-${selectedSpriteColumn*20}%,-${selectedSpriteRow*25}%)`};
+  const previewIndex=Math.min(selectedColourIndex,14);
+  const selectedSpriteColumn=previewIndex%5;
+  const selectedSpriteRow=Math.floor(previewIndex/5);
+  const selectedSpriteTransform={transform:`translate(-${selectedSpriteColumn*20}%,-${selectedSpriteRow*(100/2)}%)`};
   const chestSelected=patchPlacements.includes("Left Chest") || patchPlacements.includes("Right Chest");
   const patchPrice=patchPlacements.reduce((sum,placement)=>{
     if(placement==="Left Chest" || placement==="Right Chest") return sum+(patchSize ? patchPrices[patchSize] : 0);
@@ -178,7 +179,7 @@ export default function Home() {
     {cartOpen&&<div className="drawer-backdrop" onClick={()=>setCartOpen(false)}><aside className="cart-drawer" onClick={e=>e.stopPropagation()}>
       <div className="drawer-head"><h3>Your Cart ({cartItems.length})</h3><button className="icon-btn" onClick={()=>setCartOpen(false)}><X size={18}/></button></div>
       <div className="checkout-summary">
-        {cartItems.map((item,index)=><div className="checkout-product-card cart-item-card" key={index}><div className="checkout-product-photo"><img src={kurtaCatalogImage} alt={`${item.colour} kurta`} style={{width:"500%",height:"400%",maxWidth:"none",transform:`translate(-${(colours.findIndex(([name])=>name===item.colour)%5)*20}%,-${Math.floor(colours.findIndex(([name])=>name===item.colour)/5)*25}%)`}}/></div><div className="checkout-product-info"><b>{index+1}. {item.colour} Custom Kurta</b><p>Size: {item.size}<br/>Patch: {item.patchDetails.replace(" / ₹"+item.patchPrice,"")}<br/>Print: {item.printDetails.replace(" / ₹"+item.printPrice,"")}</p><strong>₹{item.total}</strong><button className="cart-remove" onClick={()=>removeCartItem(index)}>Remove</button></div></div>)}
+        {cartItems.map((item,index)=><div className="checkout-product-card cart-item-card" key={index}><div className="checkout-product-photo"><img src={kurtaCatalogImage} alt={`${item.colour} kurta`} style={{width:"500%",height:"300%",maxWidth:"none",transform:`translate(-${(Math.min(colours.findIndex(([name])=>name===item.colour),14)%5)*20}%,-${Math.floor(Math.min(colours.findIndex(([name])=>name===item.colour),14)/5)*(100/2)}%)`}}/></div><div className="checkout-product-info"><b>{index+1}. {item.colour} Custom Kurta</b><p>Size: {item.size}<br/>Patch: {item.patchDetails.replace(" / ₹"+item.patchPrice,"")}<br/>Print: {item.printDetails.replace(" / ₹"+item.printPrice,"")}</p><strong>₹{item.total}</strong><button className="cart-remove" onClick={()=>removeCartItem(index)}>Remove</button></div></div>)}
         {!cartItems.length&&<p className="cart-empty">Your cart is empty.</p>}
         {cartItems.length>0&&<button type="button" className="btn btn-light full-btn" onClick={continueShopping}>+ Add Another Kurta</button>}
         <div className="shipping-form shipping-included"><div className="shipping-form-title">Delivery Details</div>
