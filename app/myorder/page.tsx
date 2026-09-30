@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Check, Package, Search, Truck } from "lucide-react";
 
 const steps=["Order Received","Confirmed","In Production","Dispatched","Delivered"];
+function deliveryEstimate(city:string){return city.trim().toLowerCase()==="ahmedabad"?"3-4 days":"8-10 days";}
 
 export default function OrdersPage(){
   const [phone,setPhone]=useState("");
@@ -55,7 +56,7 @@ export default function OrdersPage(){
               {steps.map((step,i)=><div key={step} className={"order-step "+(i<=activeIndex?"done":"")}><div className="order-step-dot">{i<=activeIndex?<Check size={14}/>:i===3?<Truck size={14}/>:<Package size={14}/>}</div><span>{step}</span></div>)}
             </div>
             <div className="order-detail-grid">{Array.isArray(order.items)&&order.items.length>1 ? order.items.map((item:any,i:number)=><div key={i}><b>Kurta {i+1}</b><p>{item.colour} · Size {item.size}<br/>{item.patchDetails} · {item.printDetails}<br/><strong>₹{item.total}</strong></p></div>) : <><div><b>Kurta</b><p>{order.colour} · Size {order.size}</p></div><div><b>Patch</b><p>{order.patch_details} {order.patch_price?("· ₹"+order.patch_price):""}</p></div><div><b>DTF Print</b><p>{order.print_details} {order.print_price?("· ₹"+order.print_price):""}</p></div></>}<div><b>Total</b><p>₹{order.total} · Shipping Included</p></div></div>
-            <div className="order-address"><b>Delivery Address</b><p>{order.shipping_address}, {order.shipping_city}, {order.shipping_state} - {order.shipping_pincode}</p></div>
+            <div className="order-address"><b>Delivery Address</b><p>{order.shipping_address}, {order.shipping_city}, {order.shipping_state} - {order.shipping_pincode}</p></div><div className="delivery-estimate order-delivery-estimate">🚚 <b>Estimated Delivery:</b> {deliveryEstimate(order.shipping_city)}</div>
             {(order.status==="Dispatched"||order.status==="Delivered")&&<div className="tracking-card"><Truck size={20}/><div><b>{order.status==="Delivered"?"Delivery completed":"Your order is on the way"}</b><p>{order.courier_name||"Courier"}{order.tracking_number?(" · "+order.tracking_number):""}</p>{order.tracking_url&&<a href={order.tracking_url} target="_blank" rel="noreferrer">Track Shipment</a>}</div></div>}
           </div>
         })}
