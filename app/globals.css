@@ -309,6 +309,8 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 .colour-collage{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px 14px;border-radius:18px;overflow:hidden;background:#e9dfcf;padding:20px 22px}
 .colour-tile{position:relative;min-height:82px;border:0;padding:0;overflow:visible;cursor:pointer;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px}
 .colour-swatch{width:58px;height:58px;border-radius:50%;display:block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08),0 3px 8px rgba(0,0,0,.12);transition:.2s ease}
+.colour-tile-image{width:58px;height:58px;object-fit:cover;object-position:center top;border-radius:50%;display:block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08),0 3px 8px rgba(0,0,0,.12);transition:.2s ease}
+.colour-tile:hover .colour-tile-image{transform:scale(1.06)}
 .colour-tile:hover .colour-swatch{transform:scale(1.06)}
 .colour-tile:after{content:"";position:absolute;top:-5px;left:50%;width:68px;height:68px;transform:translateX(-50%);border:2px solid transparent;border-radius:50%;transition:.2s ease;pointer-events:none}
 .colour-tile-active:after{border-color:#d4a24b;box-shadow:0 0 0 2px rgba(212,162,75,.18)}
@@ -333,7 +335,8 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 @media(max-width:560px){
  .colour-picker-card{padding:10px;gap:12px}
  .colour-collage{gap:14px 8px;padding:16px 10px}
- .colour-tile{padding:8px 2px}.colour-swatch{width:46px;height:46px}.colour-tile:after{width:56px;height:56px}.colour-tile-label{font-size:9px}
+ .colour-tile{padding:8px 2px}.colour-swatch{width:46px;height:46px}
+.colour-tile-image{width:46px;height:46px}.colour-tile:after{width:56px;height:56px}.colour-tile-label{font-size:9px}
  .colour-picker-info{padding:18px}
  .colour-picker-info h3{font-size:30px}
  .colour-picker-info .btn{width:100%;align-self:stretch}
@@ -394,7 +397,7 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 
 /* Refined colour selection and mobile live preview */
 .colour-tile:after{display:none}
-.colour-tile-active .colour-swatch{
+.colour-tile-active .colour-swatch,.colour-tile-active .colour-tile-image{
   outline:2px solid #d4a24b;
   outline-offset:4px;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.08),0 3px 8px rgba(0,0,0,.12),0 0 0 2px rgba(212,162,75,.14);
