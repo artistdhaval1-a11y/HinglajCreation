@@ -687,7 +687,7 @@ h1 { font-size:clamp(46px, 6vw, 78px); line-height:.96; margin:18px 0 24px; }
 .preview-photo{position:relative;width:min(360px,100%);height:auto!important;aspect-ratio:1052/1495!important;max-height:none!important;margin:0 auto;border-radius:14px;overflow:hidden;background:#f5f2ea;}
 .preview-kurta-sprite,.preview-kurta-direct{display:block;width:100%;height:100%;border:0;}
 .preview-kurta-sprite{background-repeat:no-repeat;background-size:500% 300%;}
-.preview-kurta-direct{object-fit:cover;object-position:center;}
+.preview-kurta-direct{object-fit:contain;object-position:center;width:100%;height:100%;}
 .checkout-product-photo{overflow:hidden;}
 .checkout-product-photo>img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;}
 .cart-kurta-sprite{width:100%;height:100%;background-repeat:no-repeat;background-size:500% 300%;}
