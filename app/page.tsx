@@ -32,6 +32,7 @@ type CartItem = { colour:string; tone:string; size:string; patchDetails:string; 
 
 export default function Home() {
   const [selectedColour,setSelectedColour]=useState("White");
+  const [customiseOpen,setCustomiseOpen]=useState(false);
   const [selectedTone,setSelectedTone]=useState("#f5f2ea");
   const [kurtaSize,setKurtaSize]=useState("");
   const [patchSize,setPatchSize]=useState("");
@@ -121,7 +122,7 @@ export default function Home() {
         <div className="section-head"><div><span className="eyebrow">Step 01</span><h2>Choose Your Plain Kurta</h2><p>Every custom order starts at <strong>₹249</strong>. Select one colour below, then continue to size and customisation.</p></div></div>
         <div className="colour-picker-card">
           <div className="colour-collage" role="group" aria-label="Choose kurta colour">
-            {colours.map(([name,tone])=><button key={name} className={"colour-tile "+(selectedColour===name?"colour-tile-active":"")} onClick={()=>{setSelectedColour(name);setSelectedTone(tone);window.setTimeout(()=>document.getElementById("customise")?.scrollIntoView({behavior:"smooth"}),50);}} aria-label={"Select "+name+" kurta"}><span className="colour-swatch" style={{background:tone}}/><span className="colour-tile-label">{name}</span></button>)}</div>
+            {colours.map(([name,tone])=><button key={name} className={"colour-tile "+(selectedColour===name?"colour-tile-active":"")} onClick={()=>{setSelectedColour(name);setSelectedTone(tone);setCustomiseOpen(true);}} aria-label={"Select "+name+" kurta"}><span className="colour-swatch" style={{background:tone}}/><span className="colour-tile-label">{name}</span></button>)}</div>
           <div className="colour-picker-info">
             <div><span className="eyebrow">Selected Colour</span><h3>{selectedColour}</h3><p>Plain kurta · ₹249 · Sizes S–XXL</p></div>
             
@@ -129,7 +130,7 @@ export default function Home() {
         </div>
       </div></section>
 
-      <section className="section customise-section" id="customise"><div className="container">
+      <section className={"section customise-section customise-wizard "+(customiseOpen?"customise-wizard-open":"")} id="customise"><div className="customise-wizard-backdrop" onClick={()=>setCustomiseOpen(false)}></div><div className="customise-wizard-panel"><div className="customise-wizard-top"><button className="customise-back-btn" onClick={()=>setCustomiseOpen(false)}><ArrowRight size={17} style={{transform:"rotate(180deg)"}}/> Back to colours</button><span>Step 02 of 02</span></div><div className="container">
         <div className="section-head"><div><span className="eyebrow">Step 02</span><h2>Customize Your Kurta</h2><p>Base: <strong>{selectedColour}</strong> · Plain kurta ₹249</p></div></div>
         <div className="builder">
           <aside className="builder-preview"><div className="preview-label">LIVE PREVIEW</div><div className="preview-stage"><div className="preview-photo" style={{backgroundImage:`url(${kurtaCatalogImage})`,backgroundSize:"500% 300%",backgroundPosition:selectedSpritePosition.backgroundPosition}}></div></div><div className="preview-colour"><span className="colour-dot" style={{background:selectedTone}}/> {selectedColour} · Size {kurtaSize||"—"}</div><div className="preview-product-details"><div className="preview-product-heading"><span>PRODUCT DETAILS</span><b>Custom Men&apos;s Kurta</b></div><div className="preview-detail-row"><span>Colour</span><b>{selectedColour}</b></div><div className="preview-detail-row"><span>Size</span><b>{kurtaSize||"Not selected"}</b></div><div className="preview-detail-row"><span>Plain Kurta</span><b>₹249</b></div><div className="preview-detail-row"><span>Patch Work</span><b>{patchPrice?`₹${patchPrice}`:"None · ₹0"}</b></div><div className="preview-detail-row"><span>DTF Print</span><b>{printSize?`${printSize} · ₹${printPrice}`:"None · ₹0"}</b></div><div className="preview-detail-total"><span>Total</span><b>₹{total}</b></div></div></aside>
@@ -144,7 +145,7 @@ export default function Home() {
             <div className="builder-summary"><div><span>Plain Kurta</span><b>₹249</b></div><div><span>{selectedColour} · Size</span><b>{kurtaSize||"Not selected"}</b></div><div><span>Patch</span><b>{patchPrice?patchOrderText.replace(" / ₹"," · ₹"): "None · ₹0"}</b></div><div><span>DTF Print</span><b>{printSize?printSize+" · "+(printPosition||"Placement not selected")+" · ₹"+printPrice:"None · ₹0"}</b></div><div className="total-row"><span>Total</span><b>₹{total}</b></div><button className="btn btn-gold full-btn" disabled={!ready} onClick={addToCart}>{ready?"Add Custom Kurta to Cart":"Select kurta size to continue"} <ShoppingBag size={17}/></button></div>
           </div>
         </div>
-      </div></section>
+      </div></div></section>
 
       <section className="section product-details-section" id="product-details"><div className="container">
   <div className="section-head"><div><span className="eyebrow">Product Details</span><h2>Build Your Kurta Your Way</h2><p>A men's long kurta designed as the perfect base for your own patch, DTF print, or combination.</p></div></div>
