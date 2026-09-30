@@ -87,7 +87,7 @@ export default function Home() {
   }
   function addToCart(){if(!ready){window.alert("Please select a kurta size and complete the required customization selections.");return;} const item:CartItem={colour:selectedColour,tone:selectedTone,size:kurtaSize,patchDetails:patchOrderText,patchPrice,printDetails:printDetailsText,printPrice,total,patchImage,printImage}; setCartItems(prev=>[...prev,item]); setAdded(true); setCustomiseOpen(false); setOrderCreatedId(""); window.setTimeout(()=>{setAdded(false);window.scrollTo({top:0,behavior:"smooth"});},1800);}
   function removeCartItem(index:number){setCartItems(prev=>prev.filter((_,i)=>i!==index));}
-  function continueShopping(){setCartOpen(false);}
+  function continueShopping(){setCartOpen(false);window.setTimeout(()=>document.getElementById("shop")?.scrollIntoView({behavior:"smooth",block:"start"}),50);}
   async function placeOrderOnWhatsApp(){
     if(!cartItems.length){window.alert("Please add at least one kurta to your cart.");return;}
     if(!customerName.trim()||!/^\d{10}$/.test(customerPhone)||!shippingAddress.trim()||!shippingCity.trim()||!shippingState.trim()||!/^\d{6}$/.test(shippingPincode)){window.alert("Please complete your name, 10-digit mobile number and full delivery address.");return;}
